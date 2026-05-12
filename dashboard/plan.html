@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AeroMind — Real-Time Flight Control Implementation Plan</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚁</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/sentinel.css">
+</head>
+<body>
+
+<!-- Dashboard Nav -->
+<nav class="dashboard-nav">
+  <a href="/" class="brand"><span>AS</span> AeroMind Sentinel</a>
+  <div class="nav-links">
+    <a href="/#problem">Problem</a>
+    <a href="/#architecture">Architecture</a>
+    <a href="/swarm">Digital Twin</a>
+    <a href="/gallery">Gallery</a>
+    <a href="/training">Training</a>
+    <a href="/plan">Plan</a>
+    <a href="/report" class="nav-btn"><i class="fas fa-file-alt"></i> Report</a>
+  </div>
+</nav>
+
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-tag">CONFIDENTIAL · ANTIGRAVITY TEAM</div>
+    <h1>AeroMind <span>Real-Time</span><br>Flight Control<br>Implementation Plan</h1>
+    <p class="header-sub">// Real-time neural adaptation · Online learning · Obstacle avoidance</p>
+    <div class="header-meta">
+      <div class="meta-item">
+        <span class="meta-label">Project</span>
+        <span class="meta-value">AeroMind AI v2.0</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Prepared for</span>
+        <span class="meta-value">AntiGravity Team</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Competition</span>
+        <span class="meta-value">MTC — AIC-4, April 2026</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Total Duration</span>
+        <span class="meta-value">6 Weeks</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="grid-4">
+    <div class="card c1">
+      <div class="metric cyan">6</div>
+      <div class="summary-desc">Implementation<br>Phases</div>
+    </div>
+    <div class="card c2">
+      <div class="metric emerald">6 wks</div>
+      <div class="summary-desc">Total estimated<br>timeline</div>
+    </div>
+    <div class="card c3">
+      <div class="metric cyan">22Hz</div>
+      <div class="summary-desc">Target real-time<br>control frequency</div>
+    </div>
+    <div class="card c4">
+      <div class="metric emerald">91.4%</div>
+      <div class="summary-desc">Baseline MOTA<br>to preserve</div>
+    </div>
+  </div>
+
+  <!-- Phases -->
+  <div class="section-label">
+    <span class="section-num">01</span>
+    <span class="section-title">Implementation Phases</span>
+    <span class="section-line"></span>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="card p1 open">
+    <div class="phase-header" onclick="toggle(this)">
+      <span class="phase-num">PHASE 01</span>
+      <span class="phase-title">Environment & Baseline Audit</span>
+      <div class="phase-meta">
+        <span class="badge badge badge-cyan" style="background:rgba(0,214,143,0.1);color:#00d68f;border-color:rgba(0,214,143,0.3);">COMPLETED</span>
+        <span class="badge badge badge-emerald">Week 1</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="phase-body">
+      <p class="phase-desc">
+        Before writing a single line of new code, the team must fully audit the existing AeroMind codebase, verify that all 6 AirSim environments run cleanly, and establish a frozen baseline checkpoint. This phase protects the existing 91.4% MOTA from accidental regression.
+      </p>
+      <div class="steps-title">// STEPS</div>
+      <ul class="steps-list">
+        <li class="step-item">
+          <span class="step-dot">01</span>
+          <span class="step-text">Clone the repo and run <code>pytest tests/ -v --cov=src</code> — all existing tests must pass before any changes are made.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">02</span>
+          <span class="step-text">Run <code>scripts/evaluate.py --scenario all</code> and record the exact baseline: MOTA, IDF1, energy, latency. Save as <code>results/baseline_frozen.json</code>.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">03</span>
+          <span class="step-text">Save the trained PPO checkpoint as <code>checkpoints/ppo_base_frozen.pt</code> — this is the sacred file. Tag it in git as <code>v1.0-frozen</code>.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">04</span>
+          <span class="step-text">Audit the 83-dimensional state vector — map each of the 83 dimensions to its source in telemetry, confirm normalization ranges, and document in <code>docs/state_space.md</code>.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">05</span>
+          <span class="step-text">Set up a CI pipeline (GitHub Actions) that automatically re-runs baseline evaluation on every PR. Any PR that drops MOTA below 80% is auto-rejected.</span>
+        </li>
+      </ul>
+      <div class="deliverables">
+        <div class="deliverables-title">✓ Deliverables</div>
+        <div class="deliverables-list">
+          <div class="deliverable-item">Frozen checkpoint tagged v1.0-frozen in git</div>
+          <div class="deliverable-item">baseline_frozen.json with all 6 metrics recorded</div>
+          <div class="deliverable-item">CI pipeline blocking regressions automatically</div>
+          <div class="deliverable-item">State space documentation (docs/state_space.md)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="card p2 open">
+    <div class="phase-header" onclick="toggle(this)">
+      <span class="phase-num">PHASE 02</span>
+      <span class="phase-title">Temporal State Encoder (GRU Layer)</span>
+      <div class="phase-meta">
+        <span class="badge badge badge-cyan" style="background:rgba(0,214,143,0.1);color:#00d68f;border-color:rgba(0,214,143,0.3);">COMPLETED</span>
+        <span class="badge badge badge-emerald">Week 2</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="phase-body">
+      <p class="phase-desc">
+        Add a GRU-based temporal encoder that gives the system memory of the last 10 flight steps (~450ms). This module sits upstream of the existing PPO and enriches the state with historical context — critical for anticipating obstacles and predicting target movement.
+      </p>
+      <div class="steps-title">// STEPS</div>
+      <ul class="steps-list">
+        <li class="step-item">
+          <span class="step-dot">01</span>
+          <span class="step-text">Create <code>src/models/temporal_encoder.py</code> — implement <code>TemporalStateEncoder</code> with a 1-layer GRU: input 83-dim, hidden 128-dim, sequence length 10.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">02</span>
+          <span class="step-text">Implement a <code>deque(maxlen=10)</code> state history buffer. Handle cold-start gracefully by padding with zeros when fewer than 10 steps are available.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">03</span>
+          <span class="step-text">The encoder outputs a 128-dim context vector. Concatenate it with the original 83-dim state to produce an enriched 211-dim vector.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">04</span>
+          <span class="step-text">Pre-train the GRU offline on recorded AirSim trajectories (from existing evaluation runs) before connecting it to the live loop — this prevents random initialization from destabilizing the PPO.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">05</span>
+          <span class="step-text">Write unit tests in <code>tests/test_temporal_encoder.py</code>: verify output shape, verify cold-start padding, verify GRU gradient flow.</span>
+        </li>
+      </ul>
+      <div class="deliverables">
+        <div class="deliverables-title">✓ Deliverables</div>
+        <div class="deliverables-list">
+          <div class="deliverable-item">src/models/temporal_encoder.py (tested)</div>
+          <div class="deliverable-item">Pre-trained GRU weights saved to checkpoints/</div>
+          <div class="deliverable-item">Unit tests passing with >90% coverage on new module</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="card p3 open">
+    <div class="phase-header" onclick="toggle(this)">
+      <span class="phase-num">PHASE 03</span>
+      <span class="phase-title">Online Adapter Network</span>
+      <div class="phase-meta">
+        <span class="badge badge badge-cyan" style="background:rgba(0,214,143,0.1);color:#00d68f;border-color:rgba(0,214,143,0.3);">COMPLETED</span>
+        <span class="badge badge badge-emerald">Week 3</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="phase-body">
+      <p class="phase-desc">
+        Implement the <code>OnlineAdapter</code> — a small 2-layer MLP that sits on top of the frozen PPO and learns real-time delta corrections. The frozen base policy provides stability; the adapter provides adaptability. The adapter updates every 16 steps using a rolling replay buffer.
+      </p>
+      <div class="steps-title">// STEPS</div>
+      <ul class="steps-list">
+        <li class="step-item">
+          <span class="step-dot">01</span>
+          <span class="step-text">Create <code>src/models/online_adapter.py</code>. Architecture: Linear(83→64) → Tanh → Linear(64→3) → Tanh. Add a learnable scalar <code>alpha</code> initialized to 0.1 to scale the adapter's influence.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">02</span>
+          <span class="step-text">Implement <code>RealTimeFlightController</code> in <code>src/control/rt_controller.py</code>. It wraps both the frozen PPO and the adapter. Only <code>adapter.parameters()</code> are passed to the optimizer.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">03</span>
+          <span class="step-text">Implement the rolling replay buffer as <code>deque(maxlen=256)</code>. Every 16 steps, sample a mini-batch of 32 and run one gradient step with gradient clipping at 0.5.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">04</span>
+          <span class="step-text">Add a <code>--adapter-off</code> flag to the evaluation script so you can A/B test with and without the adapter in a single command.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">05</span>
+          <span class="step-text">Stress test: run 1000 steps in mock mode and verify <code>alpha</code> doesn't explode. Log adapter loss to TensorBoard under <code>runs/adapter/</code>.</span>
+        </li>
+      </ul>
+      <div class="deliverables">
+        <div class="deliverables-title">✓ Deliverables</div>
+        <div class="deliverables-list">
+          <div class="deliverable-item">src/models/online_adapter.py</div>
+          <div class="deliverable-item">src/control/rt_controller.py</div>
+          <div class="deliverable-item">A/B evaluation flag --adapter-off working</div>
+          <div class="deliverable-item">TensorBoard logs confirming stable adapter training</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="card p4">
+    <div class="phase-header" onclick="toggle(this)">
+      <span class="phase-num">PHASE 04</span>
+      <span class="phase-title">Extended Reward Function</span>
+      <div class="phase-meta">
+        <span class="badge badge badge-emerald">Week 4</span>
+        <span class="badge badge badge-cyan badge-amber">MED PRIORITY</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="phase-body">
+      <p class="phase-desc">
+        Extend the existing reward function with two new terms: an obstacle proximity penalty (exponential, activates within 3m) and a target proximity bonus (rewards staying in the 2–8m optimal tracking range). Both are backward-compatible with the existing reward weights.
+      </p>
+      <div class="steps-title">// STEPS</div>
+      <ul class="steps-list">
+        <li class="step-item">
+          <span class="step-dot">01</span>
+          <span class="step-text">Create <code>src/rewards/rt_reward.py</code> extending the existing reward class. Add <code>delta=2.0</code> (obstacle) and <code>eta=1.5</code> (proximity) as configurable YAML parameters.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">02</span>
+          <span class="step-text">Implement <code>_obstacle_penalty(distances)</code>: returns 0 when min distance > 3m, then <code>(3.0 - min_d)²</code> as the drone approaches. Clamp max penalty at 9.0.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">03</span>
+          <span class="step-text">Implement <code>_proximity_bonus(target_distances)</code>: full reward for 2–8m range, 0.3 if too close, linear decay beyond 8m. Average across all visible targets.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">04</span>
+          <span class="step-text">Plot reward component breakdown for 3 scenarios in <code>notebooks/reward_analysis.ipynb</code> to verify the new terms don't overwhelm the tracking signal.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">05</span>
+          <span class="step-text">Run a 2-hour AirSim session on <code>dense_urban</code> with the new reward and confirm energy savings remain above 30% (must not regress from the −34.8% baseline).</span>
+        </li>
+      </ul>
+      <div class="deliverables">
+        <div class="deliverables-title">✓ Deliverables</div>
+        <div class="deliverables-list">
+          <div class="deliverable-item">src/rewards/rt_reward.py with 5 reward components</div>
+          <div class="deliverable-item">reward_analysis.ipynb with component breakdown plots</div>
+          <div class="deliverable-item">Energy savings confirmed ≥ 30% in dense_urban</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="card p5">
+    <div class="phase-header" onclick="toggle(this)">
+      <span class="phase-num">PHASE 05</span>
+      <span class="phase-title">Full System Integration & 22Hz Loop</span>
+      <div class="phase-meta">
+        <span class="badge badge badge-emerald">Week 5</span>
+        <span class="badge badge badge-cyan badge-red">HIGH PRIORITY</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="phase-body">
+      <p class="phase-desc">
+        Wire all components together into the <code>AeroMindRealTimeSystem</code> main loop running at 22Hz. This phase is purely integration — no new ML code. Every component must perform within budget for the 45ms latency constraint to be met.
+      </p>
+      <div class="steps-title">// STEPS</div>
+      <ul class="steps-list">
+        <li class="step-item">
+          <span class="step-dot">01</span>
+          <span class="step-text">Create <code>src/system/aeromind_rt.py</code> as the main entry point. It initializes: AirSim client → <code>TemporalStateEncoder</code> → <code>RealTimeFlightController</code> → <code>RealTimeRewardComputer</code>.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">02</span>
+          <span class="step-text">Implement the 22Hz control loop with precise timing: use <code>time.perf_counter()</code> for sub-millisecond accuracy. Log actual loop frequency to confirm we're hitting 22Hz ± 1Hz.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">03</span>
+          <span class="step-text">Profile each component's latency contribution using <code>cProfile</code>: detection, tracking, GRU encode, PPO forward, adapter forward, AirSim command. Total must stay under 45ms.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">04</span>
+          <span class="step-text">Add graceful shutdown: on <code>KeyboardInterrupt</code>, save the adapter weights, flush logs, and land the drone safely before exit.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">05</span>
+          <span class="step-text">Run the full integrated system for 30 minutes in all 6 AirSim scenarios. Capture a screen recording for the competition demo video.</span>
+        </li>
+      </ul>
+      <div class="deliverables">
+        <div class="deliverables-title">✓ Deliverables</div>
+        <div class="deliverables-list">
+          <div class="deliverable-item">src/system/aeromind_rt.py — main entry point</div>
+          <div class="deliverable-item">Loop frequency confirmed at 22Hz ± 1Hz</div>
+          <div class="deliverable-item">Latency profile report (all components under budget)</div>
+          <div class="deliverable-item">30-min recording across all 6 scenarios</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div class="card p6">
+    <div class="phase-header" onclick="toggle(this)">
+      <span class="phase-num">PHASE 06</span>
+      <span class="phase-title">Evaluation, Benchmarking & Documentation</span>
+      <div class="phase-meta">
+        <span class="badge badge badge-emerald">Week 6</span>
+        <span class="badge badge badge-cyan badge-amber">MED PRIORITY</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="phase-body">
+      <p class="phase-desc">
+        Final benchmarking against the frozen baseline, ablation study comparing the adapter on/off, and preparation of all deliverables for the competition submission. This phase produces the updated technical report.
+      </p>
+      <div class="steps-title">// STEPS</div>
+      <ul class="steps-list">
+        <li class="step-item">
+          <span class="step-dot">01</span>
+          <span class="step-text">Run the full evaluation suite: <code>evaluate.py --scenario all --compare baseline_frozen.json</code>. Generate comparison table for all 6 metrics across all 6 scenarios.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">02</span>
+          <span class="step-text">Run the ablation study: (a) no GRU, (b) no adapter, (c) old reward, (d) full system. This proves each component's contribution independently.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">03</span>
+          <span class="step-text">Update <code>README.md</code> with the new architecture diagram, updated results table, and clear quickstart instructions for running the RT system.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">04</span>
+          <span class="step-text">Update the technical report (Section 7) with new results. Add Section 10: "Real-Time Adaptation Module" describing the GRU encoder and online adapter.</span>
+        </li>
+        <li class="step-item">
+          <span class="step-dot">05</span>
+          <span class="step-text">Tag the final release as <code>v2.0-rt</code> in git. Create a GitHub Release with the frozen checkpoint, adapter weights, and results JSON attached.</span>
+        </li>
+      </ul>
+      <div class="deliverables">
+        <div class="deliverables-title">✓ Deliverables</div>
+        <div class="deliverables-list">
+          <div class="deliverable-item">Full benchmark comparison table (v1 vs v2)</div>
+          <div class="deliverable-item">Ablation study results (4 configurations)</div>
+          <div class="deliverable-item">Updated technical report with Section 10</div>
+          <div class="deliverable-item">GitHub Release v2.0-rt with all artifacts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Timeline -->
+  <div class="timeline-section">
+    <div class="section-label">
+      <span class="section-num">02</span>
+      <span class="section-title">6-Week Timeline</span>
+      <span class="section-line"></span>
+    </div>
+    <div class="timeline-grid">
+      <div class="timeline-cell t1">
+        <div class="timeline-week">WEEK 01</div>
+        <div class="timeline-phase-label">Baseline Audit</div>
+        <div class="timeline-bar"></div>
+      </div>
+      <div class="timeline-cell t2">
+        <div class="timeline-week">WEEK 02</div>
+        <div class="timeline-phase-label">GRU Encoder</div>
+        <div class="timeline-bar"></div>
+      </div>
+      <div class="timeline-cell t3">
+        <div class="timeline-week">WEEK 03</div>
+        <div class="timeline-phase-label">Online Adapter</div>
+        <div class="timeline-bar"></div>
+      </div>
+      <div class="timeline-cell t4">
+        <div class="timeline-week">WEEK 04</div>
+        <div class="timeline-phase-label">Reward Ext.</div>
+        <div class="timeline-bar"></div>
+      </div>
+      <div class="timeline-cell t5">
+        <div class="timeline-week">WEEK 05</div>
+        <div class="timeline-phase-label">Integration</div>
+        <div class="timeline-bar"></div>
+      </div>
+      <div class="timeline-cell t6">
+        <div class="timeline-week">WEEK 06</div>
+        <div class="timeline-phase-label">Benchmark</div>
+        <div class="timeline-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Tech Stack -->
+  <div class="stack-section">
+    <div class="section-label">
+      <span class="section-num">03</span>
+      <span class="section-title">Technology Stack</span>
+      <span class="section-line"></span>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="stack-cat">// AI / ML</div>
+        <div class="stack-items">
+          <div class="stack-item">PyTorch 2.x</div>
+          <div class="stack-item">Stable-Baselines3 (PPO)</div>
+          <div class="stack-item">Ultralytics YOLOv8</div>
+          <div class="stack-item">OSNet-x0.25 (Re-ID)</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="stack-cat">// Simulation</div>
+        <div class="stack-items">
+          <div class="stack-item">AirSim (UE 4.27)</div>
+          <div class="stack-item">BoT-SORT Tracker</div>
+          <div class="stack-item">SAHI Tiling</div>
+          <div class="stack-item">AerialTrackingEnv</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="stack-cat">// New Modules</div>
+        <div class="stack-items">
+          <div class="stack-item">GRU Temporal Encoder</div>
+          <div class="stack-item">OnlineAdapter MLP</div>
+          <div class="stack-item">RealTimeRewardComputer</div>
+          <div class="stack-item">Rolling Replay Buffer</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="stack-cat">// DevOps</div>
+        <div class="stack-items">
+          <div class="stack-item">GitHub Actions CI</div>
+          <div class="stack-item">pytest + coverage</div>
+          <div class="stack-item">TensorBoard</div>
+          <div class="stack-item">cProfile (latency)</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="stack-cat">// Data</div>
+        <div class="stack-items">
+          <div class="stack-item">deque replay buffer</div>
+          <div class="stack-item">JSON results logging</div>
+          <div class="stack-item">YAML config system</div>
+          <div class="stack-item">Jupyter notebooks</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="stack-cat">// Constraints</div>
+        <div class="stack-items">
+          <div class="stack-item">≤ 45ms latency budget</div>
+          <div class="stack-item">22Hz control loop</div>
+          <div class="stack-item">MOTA ≥ 80% gate</div>
+          <div class="stack-item">Energy savings ≥ 30%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Risks -->
+  <div class="risk-section">
+    <div class="section-label">
+      <span class="section-num">04</span>
+      <span class="section-title">Risk Register</span>
+      <span class="section-line"></span>
+    </div>
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <th>Risk</th>
+          <th>Impact</th>
+          <th>Level</th>
+          <th>Mitigation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Online adapter destabilizes frozen PPO</td>
+          <td>MOTA drops below 80%</td>
+          <td><span class="risk-level badge-red badge" style="background:rgba(255,71,87,0.1);color:#ff4757;border:1px solid rgba(255,71,87,0.3);">HIGH</span></td>
+          <td>alpha initialized to 0.1; gradient clip 0.5; CI blocks regression</td>
+        </tr>
+        <tr>
+          <td>GRU adds too much latency</td>
+          <td>Loop drops below 22Hz</td>
+          <td><span class="risk-level badge-amber badge" style="background:rgba(255,181,71,0.1);color:#ffb547;border:1px solid rgba(255,181,71,0.3);">MED</span></td>
+          <td>Profile Phase 2; downgrade to hidden=64 if needed</td>
+        </tr>
+        <tr>
+          <td>New reward terms overwhelm tracking signal</td>
+          <td>Energy savings regress</td>
+          <td><span class="risk-level badge-amber badge" style="background:rgba(255,181,71,0.1);color:#ffb547;border:1px solid rgba(255,181,71,0.3);">MED</span></td>
+          <td>Reward analysis notebook; delta/eta configurable in YAML</td>
+        </tr>
+        <tr>
+          <td>AirSim environment instability</td>
+          <td>Integration phase blocked</td>
+          <td><span class="risk-level badge" style="background:rgba(0,214,143,0.1);color:#00d68f;border:1px solid rgba(0,214,143,0.3);">LOW</span></td>
+          <td>Mock mode available; all phases testable without live AirSim</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <a class="btn btn-outline" href="#" onclick="window.print(); return false;">↗ Export as PDF</a>
+
+  <div class="footer">
+    <div class="footer-left">AeroMind Technologies · AntiGravity Team · AIC-4 2026</div>
+    <div class="footer-right">Confidential — Do not distribute</div>
+  </div>
+
+</div>
+
+<script>
+  function toggle(header) {
+    const card = header.parentElement;
+    card.classList.toggle('open');
+  }
+</script>
+</body>
+</html>

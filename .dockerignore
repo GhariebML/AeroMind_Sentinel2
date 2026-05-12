@@ -1,0 +1,54 @@
+# ═══════════════════════════════════════════════════════════
+#  AIC-4 DroneTracking — .dockerignore
+#  Excludes large files and dev artifacts from the Docker build context.
+# ═══════════════════════════════════════════════════════════
+
+# Python artefacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# AirSim binaries (huge — run natively on host)
+airsim_envs/
+
+# Large model files — mounted as volumes at runtime
+models/detection/
+models/reid/
+models/rl/
+models/exported/
+
+# Data (generated at runtime)
+data/
+
+# Git history
+.git/
+.gitignore
+
+# Dev tools
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+notebooks/
+*.ipynb
+
+# Windows build artefacts
+dist/AIC4_Launcher.exe
+*.spec
+
+# IDE configs
+.vscode/
+.idea/
+
+# Logs
+*.log
+experiments/

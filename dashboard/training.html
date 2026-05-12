@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AeroMind AI | Training Pipeline</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚁</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/static/css/sentinel.css">
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">🚁 AeroMind AI</a>
+  <div class="nav-links">
+    <a href="/">Dashboard</a>
+    <a href="/#technology">Technology</a>
+    <a href="/#results">Results</a>
+    <a href="/swarm">Digital Twin</a>
+    <a href="/gallery">Gallery</a>
+    <a href="/training" class="active">Training</a>
+    <a href="/plan">Plan</a>
+    <a href="/report" class="nav-btn"><i class="fas fa-file-alt"></i> Report</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-badge">AIC-4 · Training Pipeline Status</div>
+  <h1>AI Training Pipeline</h1>
+  <p>Monitor all four training phases — detection, re-identification, integration, and RL navigation — with live metrics and checkpoint management.</p>
+</div>
+
+<main>
+  <!-- Phase Cards -->
+  <div class="grid2" style="margin-bottom:2rem;">
+    <div class="card">
+      <div class="phase-header">
+        <span class="phase-num">01</span>
+        <span class="status-badge status-done"><i class="fas fa-check"></i> COMPLETED</span>
+      </div>
+      <h3><i class="fas fa-camera-retro" style="color:var(--green);margin-right:8px;"></i>YOLOv8 Detection</h3>
+      <p>Fine-tuning YOLOv8m on 15,000 AirSim frames across 6 environments. 3 classes: vehicle, pedestrian, aircraft.</p>
+      <div class="code-block"><span class="prompt">$</span> python scripts/train_detector.py --config configs/config.yaml --device 0</div>
+      <div class="progress-wrap">
+        <div class="prog-label"><span class="key">Epochs (150/150)</span><span class="pct">100%</span></div>
+        <div class="prog-track"><div class="prog-fill" style="--w:100%" data-pct="100"></div></div>
+      </div>
+    </div>
+    <div class="card blue">
+      <div class="phase-header">
+        <span class="phase-num b">02</span>
+        <span class="status-badge status-done"><i class="fas fa-check"></i> COMPLETED</span>
+      </div>
+      <h3><i class="fas fa-fingerprint" style="color:var(--blue);margin-right:8px;"></i>OSNet Re-Identification</h3>
+      <p>Training OSNet-x0.25 appearance embedding model. Triplet loss + ArcFace head. 256-dim L2-normalised features.</p>
+      <div class="code-block"><span class="prompt">$</span> python scripts/train_reid.py --config configs/config.yaml</div>
+      <div class="progress-wrap">
+        <div class="prog-label"><span class="key">Epochs (75/75)</span><span class="pct">100%</span></div>
+        <div class="prog-track"><div class="prog-fill" style="--w:100%" data-pct="100"></div></div>
+      </div>
+    </div>
+    <div class="card purple">
+      <div class="phase-header">
+        <span class="phase-num p">03</span>
+        <span class="status-badge status-done"><i class="fas fa-check"></i> COMPLETED</span>
+      </div>
+      <h3><i class="fas fa-project-diagram" style="color:var(--purple);margin-right:8px;"></i>Tracking Integration</h3>
+      <p>BoT-SORT integration with OSNet embeddings. Unit tests, MOTA evaluation on held-out AirSim sequences.</p>
+      <div class="code-block"><span class="prompt">$</span> pytest tests/ -v --cov=src && python scripts/evaluate.py --mock</div>
+      <div class="progress-wrap">
+        <div class="prog-label"><span class="key">Tests Passed</span><span class="pct">100%</span></div>
+        <div class="prog-track"><div class="prog-fill" style="--w:100%" data-pct="100"></div></div>
+      </div>
+    </div>
+    <div class="card red">
+      <div class="phase-header">
+        <span class="phase-num r">04</span>
+        <span class="status-badge status-done"><i class="fas fa-check"></i> COMPLETED</span>
+      </div>
+      <h3><i class="fas fa-brain" style="color:var(--red);margin-right:8px;"></i>PPO Navigation Agent</h3>
+      <p>Reinforcement learning in closed-loop AirSim. 3M timesteps. Joint reward: tracking quality − energy cost − ID-switch penalty.</p>
+      <div class="code-block"><span class="prompt">$</span> python scripts/train_rl.py --config configs/config.yaml --timesteps 3000000</div>
+      <div class="progress-wrap">
+        <div class="prog-label"><span class="key">Timesteps (3M/3M)</span><span class="pct">100%</span></div>
+        <div class="prog-track"><div class="prog-fill" style="--w:100%" data-pct="100"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts + Hyperparams -->
+  <div class="grid2" style="margin-bottom:2rem;">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-chart-line"></i> PPO Reward Curve</div>
+      <canvas id="rewardChart" height="200"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="fas fa-sliders-h"></i> PPO Hyperparameters</div>
+      <div class="param-grid">
+        <div class="param-cell"><div class="pk">Network</div><div class="pv">2×256 MLP</div></div>
+        <div class="param-cell"><div class="pk">Learning Rate</div><div class="pv">3×10⁻⁴</div></div>
+        <div class="param-cell"><div class="pk">n_steps</div><div class="pv">2,048</div></div>
+        <div class="param-cell"><div class="pk">Batch Size</div><div class="pv">64</div></div>
+        <div class="param-cell"><div class="pk">n_epochs</div><div class="pv">10</div></div>
+        <div class="param-cell"><div class="pk">Discount γ</div><div class="pv">0.99</div></div>
+        <div class="param-cell"><div class="pk">GAE λ</div><div class="pv">0.95</div></div>
+        <div class="param-cell"><div class="pk">Clip Range</div><div class="pv">0.2</div></div>
+        <div class="param-cell"><div class="pk">Entropy</div><div class="pv">0.01</div></div>
+        <div class="param-cell"><div class="pk">Timesteps</div><div class="pv">3M</div></div>
+        <div class="param-cell"><div class="pk">α (tracking)</div><div class="pv">5.0</div></div>
+        <div class="param-cell"><div class="pk">β (energy)</div><div class="pv">0.1</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkpoints + Terminal -->
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-save"></i> Model Checkpoints</div>
+      <div class="ckpt"><div class="ckpt-icon"><i class="fas fa-robot"></i></div><div class="ckpt-info"><div class="ckpt-name">ppo_agent_3M.zip</div><div class="ckpt-meta">PPO Navigation · 3,000,000 steps · Reward: 24.8</div></div><button class="ckpt-dl">↓ Download</button></div>
+      <div class="ckpt"><div class="ckpt-icon"><i class="fas fa-eye"></i></div><div class="ckpt-info"><div class="ckpt-name">yolov8m_airsim.pt</div><div class="ckpt-meta">YOLOv8m Detection · 150 epochs · mAP50: 0.91</div></div><button class="ckpt-dl">↓ Download</button></div>
+      <div class="ckpt"><div class="ckpt-icon"><i class="fas fa-fingerprint"></i></div><div class="ckpt-info"><div class="ckpt-name">osnet_x025_reid.pth</div><div class="ckpt-meta">OSNet Re-ID · 75 epochs · Rank-1: 94.2%</div></div><button class="ckpt-dl">↓ Download</button></div>
+      <div class="ckpt"><div class="ckpt-icon"><i class="fas fa-layer-group"></i></div><div class="ckpt-info"><div class="ckpt-name">botsort_config.yaml</div><div class="ckpt-meta">BoT-SORT Config · max_age:30 · min_hits:3</div></div><button class="ckpt-dl">↓ Download</button></div>
+    </div>
+    <div class="card" style="padding:0;">
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="term-dot" style="background:#ff5f57;"></div>
+          <div class="term-dot" style="background:#febc2e;"></div>
+          <div class="term-dot" style="background:#28c840;"></div>
+          <span style="margin-left:8px;">Training Log — training_pipeline.log</span>
+        </div>
+        <div class="term-body" id="term-body">
+          <div class="term-line"><span class="ts">[00:00:01] </span><span class="info">INFO</span>  AeroMind Training Pipeline v1.0.0 initialized</div>
+          <div class="term-line"><span class="ts">[00:00:03] </span><span class="info">INFO</span>  Loading config: configs/config.yaml</div>
+          <div class="term-line"><span class="ts">[00:00:05] </span><span class="ok">✓ OK</span>   AirSim connection established — localhost:41451</div>
+          <div class="term-line"><span class="ts">[00:00:06] </span><span class="info">INFO</span>  Phase 1 — YOLOv8m fine-tuning started</div>
+          <div class="term-line"><span class="ts">[01:24:18] </span><span class="ok">✓ OK</span>   Epoch 150/150 — loss: 0.042 — mAP50: 0.912</div>
+          <div class="term-line"><span class="ts">[01:24:19] </span><span class="ok">✓ OK</span>   Checkpoint saved → yolov8m_airsim.pt</div>
+          <div class="term-line"><span class="ts">[01:24:20] </span><span class="info">INFO</span>  Phase 2 — OSNet Re-ID training started</div>
+          <div class="term-line"><span class="ts">[02:11:44] </span><span class="ok">✓ OK</span>   Epoch 75/75 — Rank-1: 94.2% — mAP: 82.1%</div>
+          <div class="term-line"><span class="ts">[02:11:45] </span><span class="ok">✓ OK</span>   Checkpoint saved → osnet_x025_reid.pth</div>
+          <div class="term-line"><span class="ts">[02:12:01] </span><span class="info">INFO</span>  Phase 3 — BoT-SORT integration tests</div>
+          <div class="term-line"><span class="ts">[02:13:22] </span><span class="ok">✓ OK</span>   pytest: 47 passed in 81.2s — Coverage: 91%</div>
+          <div class="term-line"><span class="ts">[02:13:30] </span><span class="info">INFO</span>  Phase 4 — PPO RL training started (3M steps)</div>
+          <div class="term-line"><span class="ts">[04:18:11] </span><span class="warn">WARN</span>  Step 1.2M — mean_reward: 8.4 — entropy: 0.91</div>
+          <div class="term-line"><span class="ts">[06:44:02] </span><span class="ok">✓ OK</span>   Step 3M/3M — mean_reward: 24.8 — ep_len: 309s</div>
+          <div class="term-line"><span class="ts">[06:44:03] </span><span class="ok">✓ OK</span>   Checkpoint saved → ppo_agent_3M.zip</div>
+          <div class="term-line"><span class="ts">[06:44:10] </span><span class="ok">✓ OK</span>   All phases complete. MOTA: 83.2% | Energy: −34.8%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="fbrand">🚁 AeroMind AI</div>
+  <p>&copy; <span id="yr"></span> AeroMind Technologies — Military Technical College AIC-4.</p>
+</footer>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+// Animate progress bars on load
+setTimeout(() => {
+  document.querySelectorAll('.prog-fill').forEach(el => {
+    el.style.width = el.dataset.pct + '%';
+  });
+}, 300);
+
+// Reward Chart
+const eps = Array.from({length: 30}, (_, i) => (i + 1) * 100);
+const rewards = [2.1,3.4,4.2,5.8,6.1,7.3,8.4,9.2,9.8,11.2,12.1,12.8,13.9,14.5,15.8,16.9,17.4,18.8,19.2,20.1,20.9,21.5,22.3,22.8,23.4,23.9,24.1,24.5,24.7,24.8];
+const ctx = document.getElementById('rewardChart').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: eps.map(e => e + 'k'),
+    datasets: [{
+      label: 'Mean Reward',
+      data: rewards,
+      borderColor: '#00e87a',
+      backgroundColor: 'rgba(0,232,122,0.08)',
+      borderWidth: 2,
+      pointRadius: 0,
+      tension: 0.4,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' Reward: ' + c.raw.toFixed(1) } } },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8b9bb4', maxTicksLimit: 8, font: { family: 'JetBrains Mono', size: 10 } } },
+      y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8b9bb4', font: { family: 'JetBrains Mono', size: 10 } } }
+    }
+  }
+});
+</script>
+</body>
+</html>

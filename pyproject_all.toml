@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aic4-drone-tracking"
+version = "1.0.0"
+authors = [
+    { name="AIC-4 Team" },
+]
+description = "AIC-4 Aerial Tracking System Prototype"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: Microsoft :: Windows",
+]
+dependencies = [
+    "torch>=2.0.0",
+    "torchvision",
+    "ultralytics",
+    "flask",
+    "waitress",
+    "pyyaml",
+    "loguru",
+    "opencv-python",
+    "numpy",
+    "scipy",
+    "msgpack",
+    "customtkinter",
+    "pyinstaller",
+]
+
+[project.scripts]
+aic4-launcher = "aic4_launcher:main"

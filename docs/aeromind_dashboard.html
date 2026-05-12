@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AeroMind — Tactical Intelligence Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810;
+  --bg2: #080d1a;
+  --bg3: #0c1224;
+  --panel: rgba(12,18,36,0.95);
+  --border: rgba(0,200,255,0.12);
+  --border-bright: rgba(0,200,255,0.4);
+  --cyan: #00c8ff;
+  --cyan-dim: rgba(0,200,255,0.15);
+  --green: #00ff9d;
+  --green-dim: rgba(0,255,157,0.12);
+  --amber: #ffb800;
+  --red: #ff3b3b;
+  --red-dim: rgba(255,59,59,0.15);
+  --text: #c8d8f0;
+  --text-dim: rgba(200,216,240,0.45);
+  --text-bright: #ffffff;
+  --glow-cyan: 0 0 20px rgba(0,200,255,0.4), 0 0 40px rgba(0,200,255,0.15);
+  --glow-green: 0 0 20px rgba(0,255,157,0.4), 0 0 40px rgba(0,255,157,0.15);
+  --glow-red: 0 0 20px rgba(255,59,59,0.4);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  overflow-x: hidden;
+}
+
+/* ── SCANLINE EFFECT ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+}
+
+/* ── GRID BG ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: 52px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  backdrop-filter: blur(12px);
+}
+
+.topbar-left {
+  display: flex; align-items: center; gap: 20px;
+}
+
+.sys-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 16px;
+  letter-spacing: 0.1em;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+}
+
+.sys-logo span { color: var(--text-dim); font-weight: 400; font-size: 10px; letter-spacing: 0.2em; margin-left: 8px; }
+
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--green);
+  border: 1px solid rgba(0,255,157,0.3);
+  padding: 3px 10px; border-radius: 2px;
+  background: var(--green-dim);
+}
+
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: var(--glow-green);
+  animation: blink 1.5s step-end infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.topbar-center {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px; letter-spacing: 0.2em;
+  color: var(--text-dim); text-transform: uppercase;
+}
+
+.topbar-right {
+  display: flex; align-items: center; gap: 20px;
+  font-size: 10px; letter-spacing: 0.1em; color: var(--text-dim);
+}
+
+.clock {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px; color: var(--cyan);
+  letter-spacing: 0.1em;
+}
+
+/* ── LAYOUT ── */
+.dashboard {
+  position: relative; z-index: 1;
+  padding: 68px 16px 16px;
+  display: grid;
+  grid-template-columns: 260px 1fr 260px;
+  grid-template-rows: auto auto auto auto;
+  gap: 12px;
+  min-height: 100vh;
+}
+
+/* ── PANEL BASE ── */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+
+.panel:hover { border-color: var(--border-bright); }
+
+/* corner decorations */
+.panel::before, .panel::after {
+  content: '';
+  position: absolute;
+  width: 10px; height: 10px;
+  border-color: var(--cyan);
+  border-style: solid;
+  opacity: 0.6;
+}
+
+.panel::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.panel::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+
+.panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,200,255,0.03);
+}
+
+.panel-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--cyan);
+}
+
+.panel-badge {
+  font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+}
+
+.panel-body { padding: 14px; }
+
+/* ── KPI HERO ROW ── */
+.kpi-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.kpi-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 16px 18px 14px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.kpi-card::before, .kpi-card::after {
+  content: '';
+  position: absolute;
+  width: 8px; height: 8px;
+  border-color: var(--cyan);
+  border-style: solid;
+  opacity: 0.5;
+}
+.kpi-card::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+.kpi-card::after  { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+
+.kpi-card:hover { border-color: var(--border-bright); background: rgba(0,200,255,0.04); }
+
+.kpi-card .shine {
+  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0,200,255,0.04), transparent);
+  transition: left 0.5s;
+}
+.kpi-card:hover .shine { left: 150%; }
+
+.kpi-label {
+  font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px; font-weight: 700;
+  line-height: 1; letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.kpi-value.cyan { color: var(--cyan); text-shadow: var(--glow-cyan); }
+.kpi-value.green { color: var(--green); text-shadow: var(--glow-green); }
+.kpi-value.amber { color: var(--amber); text-shadow: 0 0 20px rgba(255,184,0,0.4); }
+.kpi-value.red   { color: var(--red); text-shadow: var(--glow-red); }
+.kpi-value.white { color: var(--text-bright); }
+
+.kpi-sub {
+  font-size: 9px; color: var(--text-dim); letter-spacing: 0.05em;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.kpi-delta { color: var(--green); }
+.kpi-delta.neg { color: var(--red); }
+
+.kpi-bar-track {
+  margin-top: 10px; height: 2px;
+  background: rgba(255,255,255,0.06);
+  position: relative;
+}
+.kpi-bar-fill {
+  position: absolute; left: 0; top: 0; height: 100%;
+  transition: width 2s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ── LEFT COLUMN ── */
+.col-left { display: flex; flex-direction: column; gap: 12px; }
+
+/* System Status */
+.status-list { display: flex; flex-direction: column; gap: 0; }
+.status-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 10px;
+}
+.status-row:last-child { border-bottom: none; }
+.status-name { color: var(--text-dim); letter-spacing: 0.08em; }
+.status-val {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px; letter-spacing: 0.05em;
+}
+.s-ok   { color: var(--green); }
+.s-warn { color: var(--amber); }
+.s-err  { color: var(--red); }
+.s-info { color: var(--cyan); }
+
+/* Progress bars */
+.prog-item { margin-bottom: 12px; }
+.prog-item:last-child { margin-bottom: 0; }
+.prog-label-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 10px; }
+.prog-label { color: var(--text-dim); letter-spacing: 0.08em; }
+.prog-val { color: var(--text-bright); }
+.prog-track {
+  height: 4px; background: rgba(255,255,255,0.06);
+  border-radius: 0; position: relative; overflow: hidden;
+}
+.prog-fill {
+  position: absolute; left: 0; top: 0; height: 100%;
+  border-radius: 0;
+  transition: width 2.5s cubic-bezier(0.16,1,0.3,1);
+}
+.prog-fill.cyan { background: linear-gradient(90deg, rgba(0,200,255,0.4), var(--cyan)); }
+.prog-fill.green { background: linear-gradient(90deg, rgba(0,255,157,0.4), var(--green)); }
+.prog-fill.amber { background: linear-gradient(90deg, rgba(255,184,0,0.4), var(--amber)); }
+
+/* ── CENTER COLUMN ── */
+.col-center { display: flex; flex-direction: column; gap: 12px; }
+
+/* Radar */
+.radar-panel { height: 320px; position: relative; }
+
+.radar-svg-wrap {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.radar-canvas {
+  width: 260px; height: 260px;
+  position: relative;
+}
+
+.r-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(0,200,255,0.1);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.r-sweep {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(0,200,255,0.18) 0deg, rgba(0,255,157,0.04) 45deg, transparent 46deg);
+  animation: sweepAnim 3s linear infinite;
+}
+
+@keyframes sweepAnim { to { transform: rotate(360deg); } }
+
+.r-cross-h { position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgba(0,200,255,0.08); }
+.r-cross-v { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(0,200,255,0.08); }
+
+.r-center {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: var(--glow-cyan);
+  z-index: 5;
+}
+
+.r-blip {
+  position: absolute;
+  width: 7px; height: 7px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+}
+.r-blip::after {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: 0.3;
+  animation: blipRing 2s ease-out infinite;
+}
+@keyframes blipRing { 0%{transform:scale(1);opacity:0.4} 100%{transform:scale(3);opacity:0} }
+
+.r-blip.tgt { background: var(--green); color: var(--green); box-shadow: var(--glow-green); animation: blipPulse 1.5s ease-in-out infinite; }
+.r-blip.thr { background: var(--red); color: var(--red); box-shadow: var(--glow-red); animation: blipPulse 0.8s ease-in-out infinite; }
+.r-blip.ukn { background: var(--amber); color: var(--amber); }
+
+@keyframes blipPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+.radar-info {
+  position: absolute; bottom: 14px; left: 14px; right: 14px;
+  display: flex; justify-content: space-between; font-size: 9px; color: var(--text-dim);
+}
+
+.radar-coords {
+  position: absolute; top: 14px; left: 14px;
+  font-size: 9px; color: var(--text-dim); line-height: 1.6;
+}
+
+/* Detection table */
+.det-table { width: 100%; border-collapse: collapse; }
+.det-table th {
+  text-align: left; font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-dim); padding: 4px 8px 8px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Rajdhani', sans-serif; font-weight: 500;
+}
+.det-table td {
+  padding: 7px 8px;
+  font-size: 10px; border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-family: 'Share Tech Mono', monospace;
+  transition: background 0.2s;
+}
+.det-table tr:hover td { background: rgba(0,200,255,0.03); }
+.det-table tr:last-child td { border-bottom: none; }
+
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 2px;
+}
+.tag.normal { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,255,157,0.2); }
+.tag.threat  { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,59,59,0.2); }
+.tag.warn   { background: rgba(255,184,0,0.1); color: var(--amber); border: 1px solid rgba(255,184,0,0.2); }
+.tag-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+
+.conf-bar { display: flex; align-items: center; gap: 6px; }
+.conf-track { flex: 1; height: 3px; background: rgba(255,255,255,0.06); }
+.conf-fill { height: 100%; background: var(--cyan); }
+
+/* ── RIGHT COLUMN ── */
+.col-right { display: flex; flex-direction: column; gap: 12px; }
+
+/* Waveform */
+.wave-wrap { padding: 4px 14px 14px; }
+canvas.wave { width: 100%; height: 70px; display: block; }
+
+/* Architecture flow */
+.arch-flow { display: flex; flex-direction: column; gap: 0; }
+.arch-step {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  position: relative;
+}
+.arch-step:last-child { border-bottom: none; }
+.arch-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px; color: var(--cyan);
+  flex-shrink: 0; width: 18px; margin-top: 1px;
+  text-shadow: var(--glow-cyan);
+}
+.arch-content { flex: 1; }
+.arch-name { font-size: 11px; color: var(--text-bright); margin-bottom: 3px; letter-spacing: 0.05em; font-family: 'Rajdhani', sans-serif; font-weight: 600; }
+.arch-detail { font-size: 9px; color: var(--text-dim); line-height: 1.5; }
+.arch-tag {
+  font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--cyan); border: 1px solid rgba(0,200,255,0.2);
+  padding: 1px 5px; margin-left: 6px; vertical-align: middle;
+}
+
+/* Alert feed */
+.alert-feed { display: flex; flex-direction: column; gap: 0; }
+.alert-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  animation: alertSlide 0.4s ease;
+}
+@keyframes alertSlide { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:none} }
+.alert-item:last-child { border-bottom: none; }
+.alert-icon { font-size: 12px; margin-top: 1px; flex-shrink: 0; }
+.alert-body { flex: 1; }
+.alert-msg { font-size: 10px; color: var(--text); margin-bottom: 2px; }
+.alert-time { font-size: 8px; color: var(--text-dim); letter-spacing: 0.05em; }
+
+/* Accuracy chart */
+.acc-chart-wrap { padding: 4px 14px 10px; position: relative; }
+canvas.acc-chart { width: 100%; height: 80px; display: block; }
+
+/* Training phases */
+.phase-grid { display: flex; flex-direction: column; gap: 6px; }
+.phase-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  transition: border-color 0.2s;
+}
+.phase-item:hover { border-color: var(--border-bright); }
+.phase-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 9px; color: var(--text-dim); width: 14px; flex-shrink: 0;
+}
+.phase-name { flex: 1; font-size: 10px; color: var(--text); font-family: 'Rajdhani', sans-serif; font-weight: 500; }
+.phase-steps { font-size: 9px; color: var(--cyan); font-family: 'Orbitron', sans-serif; }
+
+/* Competition banner */
+.comp-banner {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(0,200,255,0.06) 0%, rgba(0,255,157,0.04) 100%);
+  border: 1px solid rgba(0,200,255,0.2);
+  padding: 20px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; overflow: hidden;
+}
+.comp-banner::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--cyan), var(--green));
+  box-shadow: var(--glow-cyan);
+}
+.comp-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; font-weight: 700; color: var(--cyan);
+  letter-spacing: 0.08em; margin-bottom: 4px;
+  text-shadow: var(--glow-cyan);
+}
+.comp-sub { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; }
+.comp-date {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px; font-weight: 700; color: var(--green);
+  letter-spacing: 0.05em;
+  text-shadow: var(--glow-green);
+}
+.comp-date span { font-size: 10px; color: var(--text-dim); display: block; text-align: right; margin-top: 2px; }
+.comp-tags { display: flex; gap: 8px; }
+.comp-tag {
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  border: 1px solid var(--border); padding: 4px 10px; color: var(--text-dim);
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(0,200,255,0.3); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="sys-logo">AEROMIND<span>v2.4.1</span></div>
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      SYSTEM ONLINE
+    </div>
+  </div>
+  <div class="topbar-center">TACTICAL SURVEILLANCE INTELLIGENCE SYSTEM · ITC-EGYPT 2026</div>
+  <div class="topbar-right">
+    <span>OPR: MIL-TECH-COLLEGE</span>
+    <span class="clock" id="clock">--:--:--</span>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+
+    <div class="kpi-card">
+      <div class="shine"></div>
+      <div class="kpi-label">MOTA Score</div>
+      <div class="kpi-value cyan" id="mota">0.0%</div>
+      <div class="kpi-sub"><span class="kpi-delta">▲ +2.3%</span> vs baseline</div>
+      <div class="kpi-bar-track"><div class="kpi-bar-fill" id="mota-bar" style="width:0;background:var(--cyan);"></div></div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="shine"></div>
+      <div class="kpi-label">F1 Score</div>
+      <div class="kpi-value green" id="f1">0.000</div>
+      <div class="kpi-sub"><span class="kpi-delta">▲ Precision 94.2%</span></div>
+      <div class="kpi-bar-track"><div class="kpi-bar-fill" id="f1-bar" style="width:0;background:var(--green);"></div></div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="shine"></div>
+      <div class="kpi-label">Training Steps</div>
+      <div class="kpi-value white" id="steps">0M</div>
+      <div class="kpi-sub">AirSim Simulation</div>
+      <div class="kpi-bar-track"><div class="kpi-bar-fill" id="steps-bar" style="width:0;background:rgba(200,216,240,0.5);"></div></div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="shine"></div>
+      <div class="kpi-label">Control Loop</div>
+      <div class="kpi-value amber" id="hz">0Hz</div>
+      <div class="kpi-sub">Latency: <span style="color:var(--text-bright)">45ms</span></div>
+      <div class="kpi-bar-track"><div class="kpi-bar-fill" id="hz-bar" style="width:0;background:var(--amber);"></div></div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="shine"></div>
+      <div class="kpi-label">State Space</div>
+      <div class="kpi-value red">83<span style="font-size:14px;color:var(--text-dim)">-dim</span></div>
+      <div class="kpi-sub">Action: <span style="color:var(--text-bright)">3-dim continuous</span></div>
+      <div class="kpi-bar-track"><div class="kpi-bar-fill" id="state-bar" style="width:0;background:var(--red);"></div></div>
+    </div>
+
+  </div>
+
+  <!-- LEFT COLUMN -->
+  <div class="col-left">
+
+    <!-- System Status -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">System Status</div>
+        <div class="panel-badge">LIVE</div>
+      </div>
+      <div class="panel-body">
+        <div class="status-list">
+          <div class="status-row"><span class="status-name">YOLOv8 Detector</span><span class="status-val s-ok">ACTIVE</span></div>
+          <div class="status-row"><span class="status-name">BoT-SORT Tracker</span><span class="status-val s-ok">ONLINE</span></div>
+          <div class="status-row"><span class="status-name">PPO Policy Net</span><span class="status-val s-ok">LOADED</span></div>
+          <div class="status-row"><span class="status-name">OSNet ReID</span><span class="status-val s-ok">READY</span></div>
+          <div class="status-row"><span class="status-name">AirSim Interface</span><span class="status-val s-info">SIMULATED</span></div>
+          <div class="status-row"><span class="status-name">Digital Twin</span><span class="status-val s-ok">STREAMING</span></div>
+          <div class="status-row"><span class="status-name">SDR Antenna</span><span class="status-val s-warn">STANDBY</span></div>
+          <div class="status-row"><span class="status-name">RF Classifier</span><span class="status-val s-ok">91.4% ACC</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Bars -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Module Performance</div>
+        <div class="panel-badge">METRICS</div>
+      </div>
+      <div class="panel-body">
+        <div class="prog-item">
+          <div class="prog-label-row"><span class="prog-label">Detection Precision</span><span class="prog-val">94.2%</span></div>
+          <div class="prog-track"><div class="prog-fill cyan" id="p1" style="width:0"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-label-row"><span class="prog-label">ReID Accuracy</span><span class="prog-val">88.7%</span></div>
+          <div class="prog-track"><div class="prog-fill green" id="p2" style="width:0"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-label-row"><span class="prog-label">PPO Convergence</span><span class="prog-val">96.1%</span></div>
+          <div class="prog-track"><div class="prog-fill cyan" id="p3" style="width:0"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-label-row"><span class="prog-label">Energy Efficiency</span><span class="prog-val">78.4%</span></div>
+          <div class="prog-track"><div class="prog-fill amber" id="p4" style="width:0"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-label-row"><span class="prog-label">RF Classification</span><span class="prog-val">91.4%</span></div>
+          <div class="prog-track"><div class="prog-fill green" id="p5" style="width:0"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Training Phases -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Training Pipeline</div>
+        <div class="panel-badge">4 PHASES</div>
+      </div>
+      <div class="panel-body">
+        <div class="phase-grid">
+          <div class="phase-item">
+            <div class="phase-num">P1</div>
+            <div class="phase-name">Baseline Hover Control</div>
+            <div class="phase-steps">500K</div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">P2</div>
+            <div class="phase-name">Single Target Tracking</div>
+            <div class="phase-steps">1.0M</div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">P3</div>
+            <div class="phase-name">Multi-Target + Obstacles</div>
+            <div class="phase-steps">1.0M</div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">P4</div>
+            <div class="phase-name">Full Scenario Evaluation</div>
+            <div class="phase-steps">500K</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CENTER COLUMN -->
+  <div class="col-center">
+
+    <!-- Radar -->
+    <div class="panel radar-panel">
+      <div class="panel-header">
+        <div class="panel-title">Tactical Radar · Live View</div>
+        <div class="panel-badge">SECTOR 7-G</div>
+      </div>
+
+      <div class="radar-coords">
+        LAT: 30.0444°N<br>
+        LON: 31.2357°E<br>
+        ALT: 145m AGL
+      </div>
+
+      <div class="radar-svg-wrap">
+        <div class="radar-canvas">
+          <div class="r-ring" style="width:50px;height:50px;"></div>
+          <div class="r-ring" style="width:100px;height:100px;"></div>
+          <div class="r-ring" style="width:150px;height:150px;"></div>
+          <div class="r-ring" style="width:200px;height:200px;"></div>
+          <div class="r-ring" style="width:255px;height:255px;"></div>
+          <div class="r-cross-h"></div>
+          <div class="r-cross-v"></div>
+          <div class="r-sweep"></div>
+          <!-- target blips -->
+          <div class="r-blip tgt" style="top:35%;left:62%;" title="TGT-01"></div>
+          <div class="r-blip tgt" style="top:55%;left:72%;" title="TGT-02"></div>
+          <div class="r-blip thr" style="top:28%;left:38%;" title="THREAT"></div>
+          <div class="r-blip ukn" style="top:68%;left:30%;" title="UNKNOWN"></div>
+          <div class="r-blip tgt" style="top:42%;left:20%;" title="TGT-03"></div>
+          <div class="r-center"></div>
+        </div>
+      </div>
+
+      <div class="radar-info">
+        <span>● TGT <span style="color:var(--green)">3</span></span>
+        <span>● THREAT <span style="color:var(--red)">1</span></span>
+        <span>● UKN <span style="color:var(--amber)">1</span></span>
+        <span>RANGE: 500m</span>
+      </div>
+    </div>
+
+    <!-- Detection Table -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Detection Log</div>
+        <div class="panel-badge">REAL-TIME</div>
+      </div>
+      <div class="panel-body" style="padding:10px 14px;">
+        <table class="det-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Signal Type</th>
+              <th>Confidence</th>
+              <th>Freq</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--cyan)">TGT-01</td>
+              <td><span class="tag normal"><span class="tag-dot"></span>NORMAL</span></td>
+              <td>
+                <div class="conf-bar">
+                  <div class="conf-track"><div class="conf-fill" style="width:96%"></div></div>
+                  <span style="color:var(--text-bright)">96%</span>
+                </div>
+              </td>
+              <td style="color:var(--text-dim)">2.4GHz</td>
+              <td style="color:var(--green)">TRACKED</td>
+            </tr>
+            <tr>
+              <td style="color:var(--cyan)">TGT-02</td>
+              <td><span class="tag normal"><span class="tag-dot"></span>NORMAL</span></td>
+              <td>
+                <div class="conf-bar">
+                  <div class="conf-track"><div class="conf-fill" style="width:89%"></div></div>
+                  <span style="color:var(--text-bright)">89%</span>
+                </div>
+              </td>
+              <td style="color:var(--text-dim)">5.8GHz</td>
+              <td style="color:var(--green)">TRACKED</td>
+            </tr>
+            <tr>
+              <td style="color:var(--red)">THR-01</td>
+              <td><span class="tag threat"><span class="tag-dot"></span>JAMMER</span></td>
+              <td>
+                <div class="conf-bar">
+                  <div class="conf-track"><div class="conf-fill" style="width:94%;background:var(--red)"></div></div>
+                  <span style="color:var(--red)">94%</span>
+                </div>
+              </td>
+              <td style="color:var(--text-dim)">915MHz</td>
+              <td style="color:var(--red)">⚠ ALERT</td>
+            </tr>
+            <tr>
+              <td style="color:var(--amber)">UKN-01</td>
+              <td><span class="tag warn"><span class="tag-dot"></span>DRONE RF</span></td>
+              <td>
+                <div class="conf-bar">
+                  <div class="conf-track"><div class="conf-fill" style="width:78%;background:var(--amber)"></div></div>
+                  <span style="color:var(--amber)">78%</span>
+                </div>
+              </td>
+              <td style="color:var(--text-dim)">433MHz</td>
+              <td style="color:var(--amber)">ANALYZING</td>
+            </tr>
+            <tr>
+              <td style="color:var(--cyan)">TGT-03</td>
+              <td><span class="tag normal"><span class="tag-dot"></span>NORMAL</span></td>
+              <td>
+                <div class="conf-bar">
+                  <div class="conf-track"><div class="conf-fill" style="width:92%"></div></div>
+                  <span style="color:var(--text-bright)">92%</span>
+                </div>
+              </td>
+              <td style="color:var(--text-dim)">1.2GHz</td>
+              <td style="color:var(--green)">TRACKED</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Accuracy Chart -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Training Accuracy Trend</div>
+        <div class="panel-badge">EPOCHS 1–50</div>
+      </div>
+      <div class="acc-chart-wrap">
+        <canvas class="acc-chart" id="accChart" height="80"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="col-right">
+
+    <!-- Waveform -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Live Spectrogram Feed</div>
+        <div class="panel-badge">22Hz</div>
+      </div>
+      <div class="wave-wrap">
+        <canvas class="wave" id="waveCanvas" height="70"></canvas>
+      </div>
+    </div>
+
+    <!-- Architecture -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">System Architecture</div>
+        <div class="panel-badge">PIPELINE</div>
+      </div>
+      <div class="panel-body">
+        <div class="arch-flow">
+          <div class="arch-step">
+            <div class="arch-num">01</div>
+            <div class="arch-content">
+              <div class="arch-name">RF Signal Capture <span class="arch-tag">INPUT</span></div>
+              <div class="arch-detail">RTL-SDR antenna · IQ samples · configurable center freq</div>
+            </div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-num">02</div>
+            <div class="arch-content">
+              <div class="arch-name">STFT Transform <span class="arch-tag">DSP</span></div>
+              <div class="arch-detail">Short-Time Fourier Transform · time-freq decomposition</div>
+            </div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-num">03</div>
+            <div class="arch-content">
+              <div class="arch-name">YOLOv8 + SAHI <span class="arch-tag">DETECT</span></div>
+              <div class="arch-detail">Fine-tuned · 2400 frames · SAHI 320px tiles</div>
+            </div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-num">04</div>
+            <div class="arch-content">
+              <div class="arch-name">BoT-SORT + OSNet <span class="arch-tag">TRACK</span></div>
+              <div class="arch-detail">Kalman filter · cosine ReID · persistent IDs</div>
+            </div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-num">05</div>
+            <div class="arch-content">
+              <div class="arch-name">PPO Policy <span class="arch-tag">CONTROL</span></div>
+              <div class="arch-detail">83-dim state → [vx, vz, yaw] · 22Hz loop</div>
+            </div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-num">06</div>
+            <div class="arch-content">
+              <div class="arch-name">Digital Twin <span class="arch-tag">OUTPUT</span></div>
+              <div class="arch-detail">Three.js 3D · WebSocket feed · live MOTA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Feed -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Event Log</div>
+        <div class="panel-badge" id="alert-count">0 EVENTS</div>
+      </div>
+      <div class="panel-body" id="alert-feed">
+        <div class="alert-feed">
+          <div class="alert-item">
+            <div class="alert-icon" style="color:var(--red)">⚠</div>
+            <div class="alert-body">
+              <div class="alert-msg">Jammer signal detected · THR-01 · 915MHz</div>
+              <div class="alert-time">00:00:03 · Confidence 94%</div>
+            </div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon" style="color:var(--amber)">◈</div>
+            <div class="alert-body">
+              <div class="alert-msg">Unknown drone RF · UKN-01 · 433MHz</div>
+              <div class="alert-time">00:00:07 · Analyzing…</div>
+            </div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon" style="color:var(--cyan)">◎</div>
+            <div class="alert-body">
+              <div class="alert-msg">PPO policy engaged · 3 active tracks</div>
+              <div class="alert-time">00:00:01 · MOTA 91.4%</div>
+            </div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon" style="color:var(--green)">✓</div>
+            <div class="alert-body">
+              <div class="alert-msg">ReID confirmed · TGT-01 re-acquired post-occlusion</div>
+              <div class="alert-time">00:00:12 · OSNet 0.87 similarity</div>
+            </div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon" style="color:var(--green)">✓</div>
+            <div class="alert-body">
+              <div class="alert-msg">System initialized · all modules nominal</div>
+              <div class="alert-time">00:00:00 · Build 2.4.1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COMPETITION BANNER -->
+  <div class="comp-banner">
+    <div>
+      <div class="comp-title">ITC-EGYPT 2026 · 6TH INTERNATIONAL INNOVATION COMPETITION</div>
+      <div class="comp-sub">Military Technical College · New Administrative Capital · Robotics & Industry Track</div>
+    </div>
+    <div class="comp-tags">
+      <div class="comp-tag">YOLOv8</div>
+      <div class="comp-tag">BoT-SORT</div>
+      <div class="comp-tag">PPO-RL</div>
+      <div class="comp-tag">SADAR</div>
+    </div>
+    <div>
+      <div class="comp-date">28–31 JUL 2026<span>PRESENTATION DATE</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toTimeString().slice(0,8);
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── ANIMATED COUNTERS ──
+function animateCounter(id, target, suffix, duration=1800, decimals=0) {
+  const el = document.getElementById(id);
+  let start = 0, startTime = null;
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    const progress = Math.min((ts - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const val = start + (target - start) * eased;
+    el.textContent = decimals > 0 ? val.toFixed(decimals) + suffix : Math.round(val) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function animateBar(id, pct, delay=0) {
+  setTimeout(() => {
+    document.getElementById(id).style.transition = 'width 2s cubic-bezier(0.16,1,0.3,1)';
+    document.getElementById(id).style.width = pct + '%';
+  }, delay);
+}
+
+setTimeout(() => {
+  animateCounter('mota', 91.4, '%', 2000, 1);
+  animateCounter('f1', 0.913, '', 2000, 3);
+  animateCounter('steps', 3, 'M', 1800, 0);
+  animateCounter('hz', 22, 'Hz', 1500, 0);
+  animateBar('mota-bar', 91.4, 300);
+  animateBar('f1-bar', 91.3, 400);
+  animateBar('steps-bar', 100, 500);
+  animateBar('hz-bar', 73, 600);
+  animateBar('state-bar', 83, 700);
+
+  // progress bars
+  setTimeout(() => {
+    document.getElementById('p1').style.width='94.2%';
+    document.getElementById('p2').style.width='88.7%';
+    document.getElementById('p3').style.width='96.1%';
+    document.getElementById('p4').style.width='78.4%';
+    document.getElementById('p5').style.width='91.4%';
+  }, 600);
+}, 400);
+
+// ── WAVEFORM CANVAS ──
+const wave = document.getElementById('waveCanvas');
+const wctx = wave.getContext('2d');
+wave.width = wave.offsetWidth * window.devicePixelRatio || 400;
+wave.height = 70 * (window.devicePixelRatio || 1);
+let wt = 0;
+
+function drawWave() {
+  wctx.clearRect(0, 0, wave.width, wave.height);
+  const w = wave.width, h = wave.height, cx = h/2;
+  wt += 0.04;
+
+  // background spectrogram bars
+  const bars = 80;
+  for (let i=0;i<bars;i++) {
+    const x = (i/bars)*w;
+    const bw = w/bars - 1;
+    const noise = Math.sin(i*0.3+wt*1.2)*0.3 + Math.sin(i*0.7+wt*0.8)*0.2 + Math.random()*0.1;
+    const bh = (0.3 + Math.abs(noise)*0.5) * h;
+    const alpha = 0.15 + Math.abs(noise)*0.3;
+    wctx.fillStyle = `rgba(0,200,255,${alpha})`;
+    wctx.fillRect(x, h-bh, bw, bh);
+  }
+
+  // main waveform line
+  wctx.beginPath();
+  wctx.strokeStyle = 'rgba(0,255,157,0.9)';
+  wctx.lineWidth = 1.5;
+  for (let x=0;x<w;x++) {
+    const t = (x/w)*Math.PI*8 + wt;
+    const y = cx + Math.sin(t)*cx*0.3 + Math.sin(t*2.3)*cx*0.15 + Math.sin(t*0.5)*cx*0.2;
+    x===0 ? wctx.moveTo(x,y) : wctx.lineTo(x,y);
+  }
+  wctx.stroke();
+
+  // threat spike
+  if (Math.sin(wt*0.7) > 0.7) {
+    wctx.beginPath();
+    const sx = w * 0.4;
+    wctx.strokeStyle = 'rgba(255,59,59,0.9)';
+    wctx.lineWidth = 1;
+    for (let x=sx-20;x<sx+20;x++) {
+      const t2 = (x/w)*Math.PI*12 + wt*2;
+      const y = cx + Math.sin(t2)*cx*0.7;
+      x===sx-20 ? wctx.moveTo(x,y) : wctx.lineTo(x,y);
+    }
+    wctx.stroke();
+  }
+
+  requestAnimationFrame(drawWave);
+}
+drawWave();
+
+// ── ACCURACY CHART ──
+const acc = document.getElementById('accChart');
+const actx = acc.getContext('2d');
+acc.width = acc.offsetWidth * window.devicePixelRatio || 400;
+acc.height = 80 * (window.devicePixelRatio || 1);
+
+const epochs = 50;
+const accData = Array.from({length:epochs}, (_,i) => {
+  const base = 0.55 + (i/epochs)*0.36;
+  return Math.min(0.97, base + (Math.random()-0.5)*0.04);
+});
+
+function drawAccChart() {
+  const w = acc.width, h = acc.height;
+  actx.clearRect(0,0,w,h);
+
+  // grid lines
+  [0.6,0.7,0.8,0.9].forEach(v => {
+    const y = h - v*h*0.9 - h*0.05;
+    actx.beginPath();
+    actx.strokeStyle = 'rgba(0,200,255,0.06)';
+    actx.lineWidth = 1;
+    actx.moveTo(0,y); actx.lineTo(w,y);
+    actx.stroke();
+  });
+
+  // area fill
+  actx.beginPath();
+  accData.forEach((v,i) => {
+    const x = (i/(epochs-1))*w;
+    const y = h - (v*0.9+0.05)*h;
+    i===0 ? actx.moveTo(x,y) : actx.lineTo(x,y);
+  });
+  actx.lineTo(w,h); actx.lineTo(0,h); actx.closePath();
+  const grad = actx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'rgba(0,200,255,0.18)');
+  grad.addColorStop(1,'rgba(0,200,255,0.01)');
+  actx.fillStyle = grad;
+  actx.fill();
+
+  // line
+  actx.beginPath();
+  actx.strokeStyle = 'rgba(0,200,255,0.9)';
+  actx.lineWidth = 1.5;
+  accData.forEach((v,i) => {
+    const x = (i/(epochs-1))*w;
+    const y = h - (v*0.9+0.05)*h;
+    i===0 ? actx.moveTo(x,y) : actx.lineTo(x,y);
+  });
+  actx.stroke();
+
+  // final point
+  const lx = w, ly = h - (accData[epochs-1]*0.9+0.05)*h;
+  actx.beginPath();
+  actx.arc(lx-2, ly, 3, 0, Math.PI*2);
+  actx.fillStyle = 'var(--cyan)';
+  actx.fill();
+  actx.shadowColor = 'rgba(0,200,255,0.8)';
+  actx.shadowBlur = 8;
+  actx.fill();
+}
+drawAccChart();
+
+// ── ALERT COUNT ──
+document.getElementById('alert-count').textContent = '5 EVENTS';
+</script>
+</body>
+</html>

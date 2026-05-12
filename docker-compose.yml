@@ -1,0 +1,63 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  AIC-4 DroneTracking — Professional Docker Compose
+# ═══════════════════════════════════════════════════════════════════════
+
+# Common configuration for AIC-4 services
+x-common-config: &common-config
+  image: ghariebml/aic4-dronetracking:latest
+  build:
+    context: .
+    dockerfile: Dockerfile
+    target: runtime
+  env_file: .env
+  volumes:
+    - ./experiments:/app/experiments
+    - ./models:/app/models
+    - ./configs:/app/configs
+    - ./data:/app/data
+  networks:
+    - aic4_net
+  restart: unless-stopped
+
+services:
+
+  # ── C2 Dashboard (Flask server) ──────────────────────────────────────
+  dashboard:
+    <<: *common-config
+    container_name: aic4_dashboard
+    command: python dashboard/app.py
+    ports:
+      - "${DASHBOARD_PORT:-5000}:5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── Simulation Pipeline (Mock Mode) ──────────────────────────────────
+  simulation:
+    <<: *common-config
+    container_name: aic4_simulation
+    command: python scripts/run_simulation.py --mock --record
+    depends_on:
+      dashboard:
+        condition: service_healthy
+    restart: "no"
+
+  # ── Swarm Pipeline (Mock Mode, 3 drones) ─────────────────────────────
+  swarm:
+    <<: *common-config
+    container_name: aic4_swarm
+    command: python scripts/run_swarm.py --mock
+    profiles:
+      - swarm
+    depends_on:
+      dashboard:
+        condition: service_healthy
+    restart: "no"
+
+networks:
+  aic4_net:
+    name: aic4_network
+    driver: bridge

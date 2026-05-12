@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AeroMind Sentinel Technical Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/sentinel.css" />
+  <link rel="stylesheet" href="/static/css/sentinel.css">
+</head>
+<body>
+  <nav class="nav"><a class="logo" href="/"><span class="logo-mark">AS</span><span>AeroMind <span class="accent">Sentinel</span></span></a><div class="nav-links"><a href="/">Home</a><a href="/#demo">Demo</a><a href="/#business">Business</a></div></nav>
+  <main class="report-wrap"><article id="report" class="card report"><h1>Loading technical report...</h1></article></main>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    fetch('/api/report/content').then(r=>r.text()).then(md=>{document.getElementById('report').innerHTML = marked.parse(md);}).catch(()=>{document.getElementById('report').innerHTML='<h1>Report unavailable</h1><p>Please open docs/technical_report.md.</p>';});
+  </script>
+</body>
+</html>

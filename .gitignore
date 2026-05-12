@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual env
+.venv/
+venv/
+env/
+
+# Data (large files — store in DVC or cloud)
+data/raw/
+data/processed/
+data/annotations/
+
+# Model weights
+models/detection/*.pt
+models/reid/*.pt
+models/rl/*.zip
+
+# Experiments
+experiments/logs/
+experiments/checkpoints/
+experiments/results/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Misc
+.DS_Store
+*.log
+*.tmp
+wandb/
+runs/
+*.zip
+*.pt
+*.spec
+profile_output.txt
+airsim_envs/
+checkpoints/
+data/
+build/
+dist/
+__pycache__/
+.pytest_cache/
+.env
+.env.example

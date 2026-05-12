@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroMind AI | Simulation Gallery</title>
+    <meta name="description" content="High-resolution simulation captures and tracking visualizations from AeroMind AI aerial surveillance missions.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚁</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/sentinel.css">
+</head>
+<body>
+    <nav>
+        <a href="/" class="brand">🚁 AeroMind AI</a>
+        <div class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/#technology">Technology</a>
+            <a href="/#results">Results</a>
+            <a href="/swarm">Digital Twin</a>
+            <a href="/gallery" class="active">Gallery</a>
+            <a href="/training">Training</a>
+            <a href="/plan">Plan</a>
+            <a href="/report" class="nav-btn"><i class="fas fa-file-alt"></i> Report</a>
+        </div>
+    </nav>
+
+    <div class="page-hero">
+        <div class="page-badge">Live Simulation Captures</div>
+        <h1>Simulation Gallery</h1>
+        <p>High-resolution tracking visualizations and aerial surveillance frames from active AirSim environments.</p>
+    </div>
+
+    <div class="stats-strip" id="stats-strip">
+        <div class="strip-stat"><div class="val" id="s-total">—</div><div class="lbl">Total Captures</div></div>
+        <div class="strip-stat"><div class="val" id="s-scenarios">3</div><div class="lbl">Scenarios</div></div>
+        <div class="strip-stat"><div class="val" id="s-tracks">—</div><div class="lbl">Tracked Objects</div></div>
+        <div class="strip-stat"><div class="val">83.2%</div><div class="lbl">Avg MOTA</div></div>
+    </div>
+
+    <main>
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All Sectors</button>
+            <button class="filter-btn" data-filter="dense_urban">Dense Urban</button>
+            <button class="filter-btn" data-filter="highway">Highway</button>
+            <button class="filter-btn" data-filter="campus">Campus</button>
+        </div>
+        <div class="gallery-grid" id="grid"></div>
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lb-wrap">
+            <div class="lb-close" onclick="closeLb()"><i class="fas fa-times"></i></div>
+            <button class="lb-nav lb-prev" onclick="navLb(-1)"><i class="fas fa-chevron-left"></i></button>
+            <img id="lb-img" src="" alt="Full size capture">
+            <button class="lb-nav lb-next" onclick="navLb(1)"><i class="fas fa-chevron-right"></i></button>
+            <div class="lb-caption" id="lb-cap"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="fbrand">🚁 AeroMind AI</div>
+        <p>&copy; <span id="yr"></span> AeroMind Technologies — AIC-4 Competition.</p>
+    </footer>
+
+    <script>
+        document.getElementById('yr').textContent = new Date().getFullYear();
+
+        // Demo/fallback data shown when API is offline
+        const DEMO_IMAGES = [
+            { title:'Dense Urban Sweep — Sector 7', scenario:'dense_urban', step:1420, n_tracks:8, src:'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&q=80&auto=format' },
+            { title:'Highway Pursuit Track #4092', scenario:'highway', step:880, n_tracks:5, src:'https://images.unsplash.com/photo-1601628828688-632f38a5a7d0?w=600&q=80&auto=format' },
+            { title:'Campus Zone — Multi-Target Lock', scenario:'campus', step:2100, n_tracks:12, src:'https://images.unsplash.com/photo-1562774053-701939374585?w=600&q=80&auto=format' },
+            { title:'Dense Urban — Night Ops', scenario:'dense_urban', step:3350, n_tracks:7, src:'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=600&q=80&auto=format' },
+            { title:'Highway Overpass Scan', scenario:'highway', step:1660, n_tracks:4, src:'https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=600&q=80&auto=format' },
+            { title:'Campus Perimeter — Re-ID Confirm', scenario:'campus', step:990, n_tracks:9, src:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80&auto=format' },
+            { title:'Urban Grid — Heatmap Active', scenario:'dense_urban', step:4200, n_tracks:11, src:'https://images.unsplash.com/photo-1448630360428-65456885c650?w=600&q=80&auto=format' },
+            { title:'Highway Junction — PPO Maneuver', scenario:'highway', step:2780, n_tracks:6, src:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=80&auto=format' },
+        ];
+
+        let currentItems = [];
+        let lbIdx = 0;
+
+        function renderGrid(items) {
+            const grid = document.getElementById('grid');
+            currentItems = items;
+
+            if (!items || items.length === 0) {
+                grid.innerHTML = `<div class="no-data"><i class="fas fa-camera-slash"></i><h3>No captures found</h3><p>Run simulations to generate frames, or the demo gallery is shown when the API is offline.</p></div>`;
+                return;
+            }
+
+            // Update stats
+            document.getElementById('s-total').textContent = items.length;
+            const totalTracks = items.reduce((s, i) => s + (i.n_tracks || 0), 0);
+            document.getElementById('s-tracks').textContent = totalTracks;
+
+            grid.innerHTML = items.map((item, i) => {
+                const src = item.src || ('/' + (item.file_path || '').replace(/\\/g, '/'));
+                const fallback = DEMO_IMAGES[i % DEMO_IMAGES.length].src;
+                return `
+                <div class="gallery-item" onclick="openLb(${i})">
+                    <div class="skeleton" id="sk-${i}"></div>
+                    <img src="${src}" alt="${item.title || 'Capture'}"
+                         onerror="this.src='${fallback}'"
+                         onload="document.getElementById('sk-${i}').style.display='none'">
+                    <a class="dl-btn" href="${src}" download title="Download"><i class="fas fa-download"></i></a>
+                    <div class="gallery-caption">
+                        <strong>${item.title || 'Simulation Capture'}</strong>
+                        <div class="meta">
+                            <span><i class="fas fa-crosshairs"></i> TRK: ${item.n_tracks || 0}</span>
+                            <span><i class="fas fa-film"></i> STEP: ${item.step || 0}</span>
+                            <span style="color:var(--green);text-transform:uppercase;">${(item.scenario || 'unknown').replace('_',' ')}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function loadGallery(scenario = 'all') {
+            let url = '/api/db/gallery?limit=24';
+            if (scenario !== 'all') url += '&scenario=' + scenario;
+            fetch(url)
+                .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                .then(data => renderGrid(data.length > 0 ? data : getDemoItems(scenario)))
+                .catch(() => renderGrid(getDemoItems(scenario)));
+        }
+
+        function getDemoItems(scenario) {
+            if (scenario === 'all') return DEMO_IMAGES;
+            return DEMO_IMAGES.filter(d => d.scenario === scenario);
+        }
+
+        // Filters
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                loadGallery(btn.dataset.filter);
+            });
+        });
+
+        // Lightbox
+        function openLb(idx) {
+            lbIdx = idx;
+            updateLb();
+            document.getElementById('lightbox').classList.add('active');
+        }
+        function updateLb() {
+            const item = currentItems[lbIdx];
+            if (!item) return;
+            const src = item.src || ('/' + (item.file_path || '').replace(/\\/g, '/'));
+            document.getElementById('lb-img').src = src;
+            document.getElementById('lb-cap').textContent = (item.title || 'Simulation Capture') + ' | Step: ' + (item.step || 0) + ' | Tracks: ' + (item.n_tracks || 0);
+        }
+        function closeLb() { document.getElementById('lightbox').classList.remove('active'); }
+        function navLb(dir) {
+            lbIdx = (lbIdx + dir + currentItems.length) % currentItems.length;
+            updateLb();
+        }
+        document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox')) closeLb(); });
+        document.addEventListener('keydown', e => {
+            if (!document.getElementById('lightbox').classList.contains('active')) return;
+            if (e.key === 'Escape') closeLb();
+            if (e.key === 'ArrowLeft') navLb(-1);
+            if (e.key === 'ArrowRight') navLb(1);
+        });
+
+        // Initial load
+        loadGallery();
+    </script>
+</body>
+</html>

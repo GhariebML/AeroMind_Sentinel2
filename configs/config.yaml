@@ -1,0 +1,198 @@
+# ============================================================
+#  AIC-4 Master Configuration
+#  Mohamed Gharieb | Military Technical College | April 2026
+# ============================================================
+
+project:
+  name: "AIC4-EnergyEfficientAerialMOT"
+  version: "1.0.0"
+  author: "Mohamed Gharieb"
+  competition: "AIC-4 | Military Technical College"
+  seed: 42
+
+# ─── AirSim Simulation ───────────────────────────────────────
+airsim:
+  ip: "127.0.0.1"
+  port: 41451
+  camera_name: "front_center"       # top-down onboard camera
+  image_type: 0                      # RGB
+  frame_rate: 6                      # fps for data collection
+  environments:
+    - dense_urban
+    - highway
+    - parking_lot
+    - airport_apron
+    - campus
+    - mixed_terrain
+  drone:
+    start_altitude: -30              # AirSim uses NED (negative = up)
+    max_altitude: -60
+    max_speed: 15.0                  # m/s
+
+# ─── Detection ───────────────────────────────────────────────
+detection:
+  model: "yolov8m"                   # yolov8n/s/m/l/x or yolov10
+  weights: "models/detection/best.pt"
+  input_size: 640                    # 640 or 1024 for SAHI
+  confidence_threshold: 0.50
+  nms_iou_threshold: 0.45
+  classes:
+    0: vehicle
+    1: pedestrian
+    2: aircraft
+  # SAHI (Sliced Aided Hyper Inference) for small objects
+  sahi:
+    enabled: true
+    slice_height: 320
+    slice_width: 320
+    overlap_height_ratio: 0.2
+    overlap_width_ratio: 0.2
+  # Training
+  training:
+    epochs: 150
+    batch_size: 16
+    lr0: 0.001                       # initial LR
+    lrf: 0.00001                     # final LR (cosine annealing)
+    warmup_epochs: 3
+    augmentation:
+      mosaic: true
+      mixup: 0.1
+      random_scale: [0.5, 1.5]
+      motion_blur: true
+      brightness_jitter: 0.3
+      contrast_jitter: 0.3
+      perspective: 0.2
+    dataset_split: [0.70, 0.15, 0.15]
+    target_frames: 15000            # 10k–20k labeled frames
+
+# ─── Re-Identification ───────────────────────────────────────
+reid:
+  model: "osnet_x0_25"               # osnet_x0_25 / fastreid
+  weights: "models/reid/reid_best.pt"
+  embedding_dim: 256
+  training:
+    epochs: 75
+    batch_size: 64
+    lr: 0.0003
+    loss: "triplet"                  # triplet + ArcFace
+    triplet_margin: 0.5
+    mining: "hard"                   # hard negative mining
+    warmup_steps: 500
+
+# ─── Tracking (BoT-SORT) ─────────────────────────────────────
+tracking:
+  tracker: "botsort"
+  # Motion model (Kalman filter)
+  kalman:
+    process_noise_scale: 1.0
+    measurement_noise_scale: 1.0
+  # Association
+  iou_threshold: 0.3
+  reid_cosine_threshold: 0.4
+  iou_weight: 0.5
+  reid_weight: 0.5
+  # Track lifecycle
+  max_age: 30                        # frames before track termination
+  min_hits: 3                        # frames before track confirmed
+  # Re-ID
+  use_reid: true
+  reid_freq: 1                       # apply Re-ID every N frames
+
+# ─── Reinforcement Learning (PPO) ────────────────────────────
+rl:
+  algorithm: "PPO"
+  policy: "MlpPolicy"
+  # Network architecture
+  policy_kwargs:
+    net_arch: [256, 256]
+    activation_fn: "tanh"
+  # PPO hyperparameters
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  n_epochs: 10
+  gamma: 0.99                        # discount factor
+  gae_lambda: 0.95                   # GAE λ
+  clip_range: 0.2
+  ent_coef: 0.01
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  # Training schedule
+  total_timesteps: 3000000           # 2M–5M steps
+  episode_length: 750                # 500–1000 steps
+  n_episodes_eval: 10
+  eval_freq: 50000
+  # Reward function: R(t) = α·T(t) - β·E(t) - γ·P(t)
+  reward:
+    alpha: 5.0                       # tracking reward coefficient
+    beta: 0.1                        # energy penalty coefficient
+    gamma: 0.05                      # ID-switch penalty coefficient
+  # State vector components
+  state:
+    use_drone_pose: true             # position, velocity, heading
+    use_battery: true                # normalized battery level
+    use_active_tracks: true          # count of live tracks
+    heatmap_size: 8                  # 8×8 target density heatmap
+    use_track_duration_hist: true    # histogram of track ages
+  # Action space (continuous)
+  action:
+    max_forward_vel: 10.0            # m/s
+    max_vertical_vel: 3.0            # m/s
+    max_yaw_rate: 45.0               # deg/s
+
+# ─── Real-Time Neural Adaptation ─────────────────────────────
+real_time:
+  control_freq: 22.0                 # Hz
+  latency_budget_ms: 45.45           # 1/22.0
+  adapter:
+    learning_rate: 0.0001
+    update_interval: 16
+    batch_size: 32
+    replay_buffer_size: 256
+    alpha_init: 0.1
+  reward:
+    obstacle_penalty_weight: 2.0
+    proximity_bonus_weight: 1.5
+
+# ─── Energy Model ────────────────────────────────────────────
+energy:
+  # E_total ≈ c1·L + c2·v²_mean + c3·Δz + c4·T_fly
+  c1: 0.10                           # path length coefficient
+  c2: 0.05                           # speed squared coefficient
+  c3: 0.20                           # altitude change coefficient
+  c4: 0.02                           # flight time coefficient
+  battery_capacity_joules: 500.0
+
+# ─── Evaluation ──────────────────────────────────────────────
+evaluation:
+  scenarios:
+    - static_fixed_path
+    - rl_optimized
+    - dense_multi_target          # 10–20 objects
+    - occlusion_heavy
+    - low_altitude_small_object
+    - long_duration_energy_stress
+  baselines:
+    - random_walk
+    - greedy_centroid
+    - circular_patrol
+  targets:
+    mota: 0.80
+    idf1: 0.75
+    id_switches_per_1k: 20
+    inference_latency_ms: 60
+    energy_savings_pct: 25.0
+
+# ─── Logging & Experiment Tracking ───────────────────────────
+logging:
+  level: "INFO"
+  log_dir: "experiments/logs"
+  checkpoint_dir: "experiments/checkpoints"
+  results_dir: "experiments/results"
+  tensorboard: true
+  wandb:
+    enabled: true
+    project: "AIC4-DroneTracking"
+    entity: "ghariebml"
+  save_freq: 10000                   # steps between checkpoints
+  video_freq: 50000                  # record eval episode every N steps

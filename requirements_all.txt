@@ -1,0 +1,58 @@
+# ═══════════════════════════════════════════════════════════════════
+#  AIC-4 DroneTracking — Python Dependencies
+#  Install: python -m pip install -r requirements.txt
+#  Or run:  python setup/setup_environment.py
+# ═══════════════════════════════════════════════════════════════════
+
+# ─── Core ─────────────────────────────────────────────────────────
+numpy>=1.24.0
+scipy>=1.10.0
+pandas>=2.0.0
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# ─── Deep Learning ────────────────────────────────────────────────
+torch>=2.0.0
+torchvision>=0.15.0
+
+# ─── Detection ────────────────────────────────────────────────────
+ultralytics>=8.0.0            # YOLOv8 / YOLO11
+sahi>=0.11.0                  # Sliced Aided Hyper Inference
+
+# ─── Tracking ─────────────────────────────────────────────────────
+filterpy>=1.4.5               # Kalman filter
+lap>=0.4.0                    # Hungarian algorithm
+
+# ─── Reinforcement Learning ───────────────────────────────────────
+stable-baselines3>=2.1.0
+gymnasium>=0.29.0
+
+# ─── AirSim RPC transport ─────────────────────────────────────────
+# NOTE: The airsim Python package is vendored in vendor/airsim/
+#       (cloned from github.com/microsoft/AirSim PythonClient)
+#       because the PyPI package fails to build on Python 3.10+.
+#
+#       We provide our own msgpackrpc shim in vendor/msgpackrpc/
+#       using modern msgpack + stdlib sockets (no tornado required).
+msgpack>=1.0.5                # AirSim RPC serialization (modern replacement)
+
+# ─── Metrics & Evaluation ─────────────────────────────────────────
+motmetrics>=1.4.0             # MOTA, IDF1, MOTP
+
+# ─── Visualization ────────────────────────────────────────────────
+matplotlib>=3.7.0
+seaborn>=0.12.0
+tqdm>=4.65.0
+
+# ─── Utilities ────────────────────────────────────────────────────
+pyyaml>=6.0
+loguru>=0.7.0
+rich>=13.0.0
+omegaconf>=2.3.0
+
+# ─── Dashboard ────────────────────────────────────────────────────
+flask>=3.0.0
+
+# ─── Testing ──────────────────────────────────────────────────────
+pytest>=7.4.0
+pytest-cov>=4.1.0

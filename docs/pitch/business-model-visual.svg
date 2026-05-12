@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 820">
+  <rect width="1400" height="820" fill="#030712"/>
+  <defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#22c55e"/></linearGradient></defs>
+  <text x="70" y="90" fill="#e6f1ff" font-family="Inter,Arial" font-size="48" font-weight="900">AeroMind Sentinel Business Model</text>
+  <text x="70" y="136" fill="#94a3b8" font-family="Inter,Arial" font-size="24">B2G + B2B smart highway monitoring platform</text>
+  <g font-family="Inter,Arial">
+    <g transform="translate(80,220)"><rect width="360" height="190" rx="28" fill="#0f172a" stroke="#38bdf8"/><text x="30" y="55" fill="#38bdf8" font-size="30" font-weight="900">B2G</text><text x="30" y="95" fill="#e6f1ff" font-size="22">Traffic authorities</text><text x="30" y="128" fill="#94a3b8" font-size="19">Smart cities · civil protection</text><text x="30" y="160" fill="#94a3b8" font-size="19">Emergency command centers</text></g>
+    <g transform="translate(520,220)"><rect width="360" height="190" rx="28" fill="#0f172a" stroke="#22c55e"/><text x="30" y="55" fill="#22c55e" font-size="30" font-weight="900">B2B</text><text x="30" y="95" fill="#e6f1ff" font-size="22">Road operators</text><text x="30" y="128" fill="#94a3b8" font-size="19">Logistics · insurance</text><text x="30" y="160" fill="#94a3b8" font-size="19">Security integrators</text></g>
+    <g transform="translate(960,220)"><rect width="360" height="190" rx="28" fill="#0f172a" stroke="#2dd4bf"/><text x="30" y="55" fill="#2dd4bf" font-size="30" font-weight="900">Revenue</text><text x="30" y="95" fill="#e6f1ff" font-size="22">SaaS dashboard</text><text x="30" y="128" fill="#94a3b8" font-size="19">Drone-as-a-Service</text><text x="30" y="160" fill="#94a3b8" font-size="19">Risk engine licensing</text></g>
+    <g transform="translate(280,520)"><rect width="840" height="150" rx="34" fill="#07111f" stroke="url(#g)" stroke-width="3"/><text x="420" y="58" fill="#e6f1ff" text-anchor="middle" font-size="32" font-weight="900">Pilot → Corridor Deployment → National Smart Highway Coverage</text><text x="420" y="103" fill="#94a3b8" text-anchor="middle" font-size="22">Start with one high-risk route, validate KPIs, then scale through authorities and operators.</text></g>
+  </g>
+</svg>

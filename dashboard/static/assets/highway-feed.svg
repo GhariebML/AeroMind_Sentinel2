@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-label="Aerial highway monitoring demo feed">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#082f49"/>
+      <stop offset="0.55" stop-color="#020617"/>
+      <stop offset="1" stop-color="#052e2b"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1200" height="720" fill="url(#bg)"/>
+  <g opacity="0.22" stroke="#38bdf8" stroke-width="1">
+    <path d="M0 90H1200M0 180H1200M0 270H1200M0 360H1200M0 450H1200M0 540H1200M0 630H1200"/>
+    <path d="M120 0V720M240 0V720M360 0V720M480 0V720M600 0V720M720 0V720M840 0V720M960 0V720M1080 0V720"/>
+  </g>
+  <path d="M-40 160 C270 230 360 220 620 340 C830 438 920 470 1240 530" fill="none" stroke="#0f172a" stroke-width="210"/>
+  <path d="M-40 160 C270 230 360 220 620 340 C830 438 920 470 1240 530" fill="none" stroke="#1e293b" stroke-width="190"/>
+  <path d="M-40 160 C270 230 360 220 620 340 C830 438 920 470 1240 530" fill="none" stroke="#e2e8f0" stroke-width="5" stroke-dasharray="38 34" opacity="0.8"/>
+  <path d="M-20 230 C260 286 380 292 590 390 C830 500 900 530 1220 600" fill="none" stroke="#e2e8f0" stroke-width="4" stroke-dasharray="34 36" opacity="0.62"/>
+  <path d="M10 90 C300 160 390 148 650 270 C860 366 950 396 1210 456" fill="none" stroke="#e2e8f0" stroke-width="4" stroke-dasharray="34 36" opacity="0.62"/>
+  <g filter="url(#glow)">
+    <rect x="520" y="318" width="72" height="32" rx="8" fill="#ef4444" transform="rotate(23 556 334)"/>
+    <rect x="602" y="350" width="70" height="30" rx="8" fill="#f59e0b" transform="rotate(23 637 365)"/>
+    <rect x="350" y="245" width="62" height="27" rx="7" fill="#38bdf8" transform="rotate(18 381 258)"/>
+    <rect x="760" y="435" width="64" height="28" rx="7" fill="#22c55e" transform="rotate(24 792 449)"/>
+    <circle cx="472" cy="496" r="13" fill="#f8fafc"/>
+    <rect x="865" y="467" width="95" height="34" rx="8" fill="#64748b" transform="rotate(19 912 484)"/>
+  </g>
+  <g fill="none" stroke="#22c55e" stroke-width="3" opacity="0.9">
+    <rect x="505" y="296" width="195" height="112" rx="18"/>
+    <rect x="440" y="462" width="68" height="70" rx="12"/>
+    <rect x="840" y="430" width="150" height="100" rx="18"/>
+  </g>
+  <text x="42" y="58" fill="#22c55e" font-family="Inter,Arial" font-size="26" font-weight="800">AEROMIND SENTINEL · SIMULATED HIGHWAY FEED</text>
+  <text x="42" y="96" fill="#94a3b8" font-family="Inter,Arial" font-size="18">Aerial monitoring view · tracked IDs · risk zones · emergency overlays</text>
+</svg>
