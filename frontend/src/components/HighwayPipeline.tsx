@@ -1,66 +1,38 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Camera, BrainCircuit, Target, ShieldAlert, Navigation, MonitorDot, ArrowDown } from 'lucide-react';
+import { BrainCircuit, Camera, MonitorDot, Navigation, ShieldAlert, Target } from 'lucide-react';
 
-const pipelineSteps = [
-  { icon: Camera, title: "Drone Camera & Telemetry", desc: "Captures high-res highway video and flight data." },
-  { icon: BrainCircuit, title: "YOLOv8 + SAHI Detection", desc: "Identifies small vehicles and pedestrians from high altitudes." },
-  { icon: Target, title: "BoT-SORT Tracking", desc: "Assigns persistent IDs to track movements across frames." },
-  { icon: ShieldAlert, title: "Highway Risk Engine", desc: "Analyzes tracks to calculate incident severity and risk." },
-  { icon: Navigation, title: "PPO Energy-Aware Nav", desc: "Adjusts drone patrol path based on risk and battery level." },
-  { icon: MonitorDot, title: "Emergency Dashboard", desc: "Alerts human operators with actionable response recommendations." }
-];
+const steps = [
+  ['Drone Camera + Telemetry', 'Aerial highway feed, GPS, altitude, speed, and battery state.', Camera],
+  ['YOLOv8 + SAHI Detection', 'Small object detection for vehicles, pedestrians, hazards, and blocked lanes.', BrainCircuit],
+  ['BoT-SORT + OSNet Tracking', 'Persistent track IDs, speeds, lane movement, and identity stability.', Target],
+  ['Highway Risk Analysis Engine', 'Event scoring, severity classification, and emergency recommendations.', ShieldAlert],
+  ['PPO Energy-Aware Navigation', 'Drone moves toward risk zones while minimizing battery consumption.', Navigation],
+  ['Emergency Dashboard + Alerts', 'Control room UI for alerts, KPIs, telemetry, and response actions.', MonitorDot],
+] as const;
 
 export default function HighwayPipeline() {
   return (
-    <section id="pipeline" className="section" style={{ background: 'rgba(0,0,0,0.3)' }}>
-      <div className="container">
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <span className="subtitle text-gradient-purple">Technical Architecture</span>
-          <h2 className="title">AI Processing Pipeline</h2>
-          <p className="description" style={{ margin: '0 auto' }}>
-            A continuous loop of detection, tracking, analysis, and autonomous action.
-          </p>
-        </div>
+    <section id="pipeline" className="section-shell">
+      <div className="mx-auto max-w-4xl text-center">
+        <span className="eyebrow">How it works</span>
+        <h2 className="section-title mx-auto">A continuous AI loop from drone vision to emergency action.</h2>
+        <p className="section-copy mx-auto">The product preserves AeroMind AI’s technical core and adds a highway-specific risk and response layer.</p>
+      </div>
 
-        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {pipelineSteps.map((step, index) => (
-            <React.Fragment key={index}>
-              <motion.div 
-                className="glass-card" 
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                style={{ 
-                  padding: '1.5rem 2rem', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '1.5rem',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-              >
-                {/* Neon left border */}
-                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: 'var(--accent-cyan)' }} />
-                
-                <div style={{ color: 'var(--accent-cyan)' }}>
-                  <step.icon size={32} />
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>{step.title}</h3>
-                  <p style={{ color: 'var(--text-muted)' }}>{step.desc}</p>
-                </div>
-              </motion.div>
-              
-              {index < pipelineSteps.length - 1 && (
-                <div style={{ display: 'flex', justifyContent: 'center', color: 'var(--border-dim)' }}>
-                  <ArrowDown size={24} />
-                </div>
-              )}
-            </React.Fragment>
+      <div className="relative mt-14 overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/55 p-5 backdrop-blur-xl">
+        <div className="absolute left-0 top-1/2 h-1 w-full -translate-y-1/2 bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent" />
+        <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ staggerChildren: 0.12 }} className="relative grid gap-4 lg:grid-cols-6">
+          {steps.map(([title, copy, Icon], index) => (
+            <motion.article key={title} variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }} className="glass-card min-h-[230px] p-5">
+              <div className="mb-5 flex items-center justify-between">
+                <span className="font-mono text-xs font-black text-emerald-300">0{index + 1}</span>
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-300/10 text-cyan-200 shadow-glow"><Icon /></span>
+              </div>
+              <h3 className="text-lg font-black text-white">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-400">{copy}</p>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

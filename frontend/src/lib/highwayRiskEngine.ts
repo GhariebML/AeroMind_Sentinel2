@@ -1,42 +1,38 @@
-import { HighwayEvent, HighwayEventType, Severity, HighwayAlert, MissionRiskSummary } from '../types/highway';
+import type { HighwayAlert, HighwayEvent, HighwayEventType, MissionRiskSummary, Severity } from '../types/highway';
 
 const EVENT_WEIGHTS: Record<HighwayEventType, number> = {
-  accident: 95,
-  stopped_vehicle: 72,
-  congestion: 58,
-  pedestrian_on_highway: 88,
-  blocked_lane: 80,
-  emergency_vehicle: 45,
+  accident: 0.92,
+  stopped_vehicle: 0.68,
+  congestion: 0.52,
+  pedestrian_on_highway: 0.86,
+  blocked_lane: 0.76,
+  emergency_vehicle: 0.42,
+};
+
+const ACTIONS: Record<HighwayEventType, string> = {
+  accident: 'Dispatch ambulance and traffic police; keep drone locked overhead for live evidence.',
+  stopped_vehicle: 'Send roadside assistance and monitor rear-end collision risk in the same lane.',
+  congestion: 'Expand scan radius upstream and recommend traffic diversion to control room.',
+  pedestrian_on_highway: 'Escalate to patrol unit and broadcast driver warning for pedestrian risk.',
+  blocked_lane: 'Notify road operator, mark lane closure, and inspect debris from aerial view.',
+  emergency_vehicle: 'Track emergency vehicle corridor and support priority routing.',
 };
 
 export function calculateHighwayRisk(event: HighwayEvent): number {
   const base = EVENT_WEIGHTS[event.type];
-  const confidenceBoost = Math.max(0, Math.min(event.confidence, 1)) * 18;
-  const speedPenalty = event.type === "stopped_vehicle" && event.speed < 5 ? 10 : 0;
-  const pedestrianPenalty = event.type === "pedestrian_on_highway" ? 8 : 0;
-  const lanePenalty = event.lane.toLowerCase().includes("shoulder") ? -8 : 4;
-  return Math.max(0, Math.min(100, Math.round(base + confidenceBoost + speedPenalty + pedestrianPenalty + lanePenalty - 15)));
+  const confidence = clamp01(event.confidence);
+  const stoppedBoost = event.type === 'stopped_vehicle' && event.speed < 8 ? 0.12 : 0;
+  const pedestrianBoost = event.type === 'pedestrian_on_highway' ? 0.09 : 0;
+  const laneBoost = event.lane.toLowerCase().includes('shoulder') ? -0.04 : 0.05;
+  const speedBoost = event.speed > 90 && event.type !== 'emergency_vehicle' ? 0.04 : 0;
+  return clamp01(base * 0.72 + confidence * 0.22 + stoppedBoost + pedestrianBoost + laneBoost + speedBoost);
 }
 
 export function classifySeverity(score: number): Severity {
-  if (score >= 85) return "critical";
-  if (score >= 70) return "high";
-  if (score >= 45) return "medium";
-  return "low";
-}
-
-function titleCase(value: string): string {
-  return value.replaceAll("_", " ").replace(/\b\w/g, (character) => character.toUpperCase());
-}
-
-function recommendationFor(event: HighwayEvent, severity: Severity): string {
-  if (event.type === "accident") return "Dispatch ambulance and traffic police; route drone to hold overhead view.";
-  if (event.type === "pedestrian_on_highway") return "Alert nearest patrol unit and broadcast driver warning for pedestrian risk.";
-  if (event.type === "blocked_lane") return "Notify road operator and recommend temporary lane closure guidance.";
-  if (event.type === "stopped_vehicle") return "Send assistance vehicle and monitor rear-end collision risk.";
-  if (event.type === "congestion") return "Increase coverage over upstream lanes and recommend traffic diversion.";
-  if (event.type === "emergency_vehicle") return "Track access corridor and support priority routing.";
-  return severity === "critical" ? "Escalate to emergency control room." : "Continue monitoring.";
+  if (score <= 0.3) return 'low';
+  if (score <= 0.6) return 'medium';
+  if (score <= 0.85) return 'high';
+  return 'critical';
 }
 
 export function generateHighwayAlerts(events: HighwayEvent[]): HighwayAlert[] {
@@ -48,10 +44,10 @@ export function generateHighwayAlerts(events: HighwayEvent[]): HighwayAlert[] {
         id: `alert-${event.id}`,
         eventId: event.id,
         title: titleCase(event.type),
-        message: `Track ${event.trackId} on ${event.lane} scored ${riskScore}/100 risk at ${Math.round(event.confidence * 100)}% confidence.`,
+        message: `${event.trackId} · ${event.lane} · ${(event.confidence * 100).toFixed(0)}% confidence · ${(riskScore * 100).toFixed(0)}/100 risk`,
         severity,
         riskScore,
-        recommendation: recommendationFor(event, severity),
+        recommendation: event.recommendedAction ?? ACTIONS[event.type],
         timestamp: event.timestamp,
       };
     })
@@ -60,34 +56,32 @@ export function generateHighwayAlerts(events: HighwayEvent[]): HighwayAlert[] {
 
 export function summarizeMissionRisk(events: HighwayEvent[]): MissionRiskSummary {
   if (!events.length) {
-    return {
-      totalEvents: 0,
-      averageRisk: 0,
-      maxRisk: 0,
-      criticalCount: 0,
-      highRiskCount: 0,
-      recommendedAction: "No active incidents. Continue autonomous patrol.",
-    };
+    return { totalEvents: 0, averageRisk: 0, maxRisk: 0, criticalCount: 0, highRiskCount: 0, recommendedAction: 'No active incidents. Continue energy-aware patrol.' };
   }
-
-  const scored = events.map((event) => event.riskScore ?? calculateHighwayRisk(event));
-  const severities = scored.map(classifySeverity);
-  const maxRisk = Math.max(...scored);
-  const averageRisk = Math.round(scored.reduce((sum, score) => sum + score, 0) / scored.length);
-  const criticalCount = severities.filter((severity) => severity === "critical").length;
-  const highRiskCount = severities.filter((severity) => severity === "high").length;
-
+  const risks = events.map((event) => event.riskScore ?? calculateHighwayRisk(event));
+  const severities = risks.map(classifySeverity);
+  const maxRisk = Math.max(...risks);
+  const averageRisk = risks.reduce((sum, risk) => sum + risk, 0) / risks.length;
+  const criticalCount = severities.filter((severity) => severity === 'critical').length;
+  const highRiskCount = severities.filter((severity) => severity === 'high').length;
   return {
     totalEvents: events.length,
     averageRisk,
     maxRisk,
     criticalCount,
     highRiskCount,
-    recommendedAction:
-      criticalCount > 0
-        ? "Escalate mission to emergency mode and notify command center immediately."
-        : highRiskCount > 0
-          ? "Increase drone coverage over high-risk lanes and prepare response teams."
-          : "Maintain monitoring and continue energy-aware patrol.",
+    recommendedAction: criticalCount > 0
+      ? 'Emergency mode: notify command center, dispatch responders, and keep drone centered on the incident.'
+      : highRiskCount > 0
+        ? 'Risk patrol: increase scan density and prepare responders for escalation.'
+        : 'Normal monitoring: continue patrol and preserve battery.',
   };
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
+}
+
+function titleCase(value: string): string {
+  return value.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 }

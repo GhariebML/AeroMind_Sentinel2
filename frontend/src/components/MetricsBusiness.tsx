@@ -1,59 +1,28 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-
-const metrics = [
-  { label: "MOTA (Tracking Accuracy)", value: "83.2%", trend: "+2.1%" },
-  { label: "IDF1 Score", value: "78.5%", trend: "+1.4%" },
-  { label: "ID Switches / 1k", value: "11", trend: "-4" },
-  { label: "Energy Saved (PPO)", value: "34.8%", trend: "+5.2%" },
-  { label: "Mission Duration Inc.", value: "72%", trend: "+12%" },
-  { label: "Processing Latency", value: "~45ms", trend: "-5ms" },
-];
-
-const businessModel = [
-  { title: "Customer Segments", items: ["National Road Authorities", "Smart City Planners", "Emergency Response Units", "Toll Road Operators"] },
-  { title: "Value Proposition", items: ["Real-time incident detection", "Reduced accident response time", "Scalable autonomous coverage", "Optimized drone battery life"] },
-  { title: "Revenue Streams", items: ["SaaS Subscription per highway km", "Hardware integration fees", "Custom AI retraining", "Data analytics reports"] },
-  { title: "Key Resources", items: ["YOLOv8/SAHI AI Pipeline", "PPO Energy-Aware Nav", "Edge Compute Units", "Cloud Dashboard"] },
-  { title: "Cost Structure", items: ["Cloud Infrastructure", "Drone Maintenance", "Model Training", "R&D"] },
-  { title: "Key Partners", items: ["Drone Manufacturers", "Telecom Providers (5G)", "Government Transport Ministries"] }
-];
+import { motion, useInView, useMotionValue, useSpring } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { businessModel } from '../data/businessModel';
+import { coreMetrics, sentinelKpis } from '../data/sentinelMetrics';
 
 export function SentinelMetrics() {
   return (
-    <section id="metrics" className="section">
-      <div className="container">
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <span className="subtitle text-gradient-emerald">Performance Indicators</span>
-          <h2 className="title">System Metrics & KPIs</h2>
-          <p className="description" style={{ margin: '0 auto' }}>
-            Benchmarked against state-of-the-art multi-object tracking and autonomous navigation standards.
-          </p>
-        </div>
-
-        <div className="grid-3">
-          {metrics.map((m, i) => (
-            <motion.div 
-              key={i} 
-              className="glass-card" 
-              style={{ padding: '2rem', textAlign: 'center' }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <div style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem', lineHeight: 1 }}>
-                {m.value}
-              </div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '1rem', fontWeight: 500 }}>
-                {m.label}
-              </div>
-              <div style={{ color: m.trend.startsWith('+') ? 'var(--accent-emerald)' : 'var(--accent-cyan)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: 600 }}>
-                {m.trend} vs baseline
-              </div>
-            </motion.div>
-          ))}
-        </div>
+    <section id="metrics" className="section-shell">
+      <div className="mx-auto max-w-4xl text-center">
+        <span className="eyebrow">Metrics & KPIs</span>
+        <h2 className="section-title mx-auto">Technical depth plus highway impact indicators.</h2>
+        <p className="section-copy mx-auto">The demo communicates both the proven AeroMind AI core and the Sentinel highway product layer.</p>
+      </div>
+      <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {coreMetrics.map((metric, index) => (
+          <MetricCard key={metric.label} metric={metric} index={index} />
+        ))}
+      </div>
+      <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {sentinelKpis.map((kpi) => (
+          <div key={kpi.label} className="glass-card">
+            <div className="flex items-center justify-between"><div className="font-bold text-white">{kpi.label}</div><div className="font-mono text-cyan-200">{kpi.value}</div></div>
+            <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10"><motion.div initial={{ width: 0 }} whileInView={{ width: `${kpi.score}%` }} viewport={{ once: true }} className="h-full rounded-full bg-gradient-to-r from-cyan-300 to-emerald-300" /></div>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -61,39 +30,43 @@ export function SentinelMetrics() {
 
 export function BusinessModelCanvas() {
   return (
-    <section id="business" className="section" style={{ background: 'rgba(0,0,0,0.3)' }}>
-      <div className="container">
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <span className="subtitle text-gradient-purple">Go-To-Market</span>
-          <h2 className="title">Business Model Canvas</h2>
-          <p className="description" style={{ margin: '0 auto' }}>
-            A scalable, B2B / B2G business model designed for national infrastructure integration.
-          </p>
-        </div>
-
-        <div className="grid-3">
-          {businessModel.map((bm, i) => (
-            <motion.div 
-              key={i} 
-              className="glass-card" 
-              style={{ padding: '1.5rem' }}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-            >
-              <h3 style={{ fontSize: '1.1rem', color: 'var(--accent-cyan)', marginBottom: '1rem', borderBottom: '1px solid var(--border-dim)', paddingBottom: '0.5rem' }}>{bm.title}</h3>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {bm.items.map((item, j) => (
-                  <li key={j} style={{ color: 'var(--text-muted)', fontSize: '0.9rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                    <span style={{ color: 'var(--accent-cyan)' }}>•</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-        </div>
+    <section id="business" className="section-shell">
+      <div className="mx-auto max-w-4xl text-center">
+        <span className="eyebrow">Business Model Canvas</span>
+        <h2 className="section-title mx-auto">A startup-ready path for B2G and B2B deployment.</h2>
+        <p className="section-copy mx-auto">Sentinel can be sold as SaaS monitoring, Drone-as-a-Service, or licensed AI risk intelligence.</p>
       </div>
+      <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-120px' }} transition={{ staggerChildren: 0.06 }} className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {businessModel.map((block) => (
+          <motion.article key={block.title} variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }} className="glass-card">
+            <h3 className="border-b border-white/10 pb-3 text-xl font-black text-cyan-100">{block.title}</h3>
+            <ul className="mt-4 space-y-3">
+              {block.items.map((item) => <li key={item} className="flex gap-3 text-sm leading-6 text-slate-300"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300 shadow-greenGlow" /> {item}</li>)}
+            </ul>
+          </motion.article>
+        ))}
+      </motion.div>
     </section>
+  );
+}
+
+function MetricCard({ metric, index }: { metric: { label: string; value: number; suffix: string; prefix?: string; caption: string }; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const motionValue = useMotionValue(0);
+  const spring = useSpring(motionValue, { stiffness: 80, damping: 18 });
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (inView) motionValue.set(metric.value);
+    return spring.on('change', (latest) => setDisplay(latest));
+  }, [inView, metric.value, motionValue, spring]);
+
+  return (
+    <motion.div ref={ref} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} viewport={{ once: true }} className="glass-card text-center">
+      <div className="metric-number">{metric.prefix ?? ''}{display.toFixed(metric.value % 1 ? 1 : 0)}{metric.suffix}</div>
+      <div className="mt-2 text-lg font-black text-white">{metric.label}</div>
+      <p className="mt-2 text-sm text-slate-400">{metric.caption}</p>
+    </motion.div>
   );
 }

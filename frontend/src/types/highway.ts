@@ -1,18 +1,16 @@
 export type HighwayEventType =
-  | "accident"
-  | "stopped_vehicle"
-  | "congestion"
-  | "pedestrian_on_highway"
-  | "blocked_lane"
-  | "emergency_vehicle";
+  | 'accident'
+  | 'stopped_vehicle'
+  | 'congestion'
+  | 'pedestrian_on_highway'
+  | 'blocked_lane'
+  | 'emergency_vehicle';
 
-export type Severity = "low" | "medium" | "high" | "critical";
+export type Severity = 'low' | 'medium' | 'high' | 'critical';
 
 export interface HighwayPosition {
   x: number;
   y: number;
-  lat?: number;
-  lng?: number;
 }
 
 export interface HighwayEvent {
@@ -26,7 +24,7 @@ export interface HighwayEvent {
   timestamp: string;
   riskScore?: number;
   severity?: Severity;
-  source?: "mock" | "live_model" | "uploaded_asset";
+  recommendedAction?: string;
 }
 
 export interface HighwayAlert {
@@ -47,4 +45,22 @@ export interface MissionRiskSummary {
   criticalCount: number;
   highRiskCount: number;
   recommendedAction: string;
+}
+
+export interface DroneTelemetry {
+  battery: number;
+  altitude: number;
+  speed: number;
+  coverage: number;
+  latency: number;
+  mode: string;
+}
+
+export interface ScenarioDefinition {
+  id: string;
+  label: string;
+  headline: string;
+  description: string;
+  missionMode: string;
+  events: HighwayEvent[];
 }
