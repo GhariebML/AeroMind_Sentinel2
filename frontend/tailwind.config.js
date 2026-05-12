@@ -5,7 +5,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        heading: ['Outfit', 'sans-serif'],
+        mono: ['Space Mono', 'monospace'],
       },
       colors: {
         sentinel: {
