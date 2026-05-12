@@ -1,14 +1,19 @@
-import React from 'react';
-import Layout from './components/Layout';
 import AnimatedBackground from './components/AnimatedBackground';
 import HeroSentinel from './components/HeroSentinel';
-import { ProblemEgypt, SentinelSolution } from './components/ProblemSolution';
 import HighwayPipeline from './components/HighwayPipeline';
+import HighwayRiskEngineSection from './components/HighwayRiskEngineSection';
+import { EgyptImpact, HackathonReadiness, RoadmapTodo } from './components/ImpactRoadmap';
+import Layout from './components/Layout';
 import LiveHighwaySimulation from './components/LiveHighwaySimulation';
-import { SentinelMetrics, BusinessModelCanvas } from './components/MetricsBusiness';
-import { EgyptImpact, RoadmapTodo } from './components/ImpactRoadmap';
+import { BusinessModelCanvas, SentinelMetrics } from './components/MetricsBusiness';
+import PitchDeckExport from './components/PitchDeckExport';
+import { ProblemEgypt, SentinelSolution } from './components/ProblemSolution';
 
 function App() {
+  if (window.location.pathname === '/pitch') {
+    return <PitchDeckExport />;
+  }
+
   return (
     <Layout>
       <AnimatedBackground />
@@ -17,9 +22,11 @@ function App() {
       <SentinelSolution />
       <HighwayPipeline />
       <LiveHighwaySimulation />
+      <HighwayRiskEngineSection />
       <SentinelMetrics />
       <BusinessModelCanvas />
       <EgyptImpact />
+      <HackathonReadiness />
       <RoadmapTodo />
     </Layout>
   );

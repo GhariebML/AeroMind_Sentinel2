@@ -1,121 +1,113 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js';
+/**
+ * AeroMind Sentinel · Cyber Highway Background
+ * Custom Canvas 2D engine for high-performance 3D perspective animation.
+ */
 
 export function initThreeJS() {
-    const container = document.getElementById('hero-3d-canvas');
-    if (!container) return;
+  const container = document.getElementById('hero-3d-canvas');
+  if (!container) return;
 
-    // Setup scene, camera, renderer
-    const scene = new THREE.Scene();
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  container.appendChild(canvas);
+
+  let w, h;
+  const resize = () => {
+    w = canvas.width = container.clientWidth;
+    h = canvas.height = container.clientHeight;
+  };
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ─── Simulation State ───
+  const particles = [];
+  const lines = [];
+  const particleCount = 100;
+  const lineCount = 12;
+
+  // Initialize particles
+  for (let i = 0; i < particleCount; i++) {
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      size: Math.random() * 2,
+      speed: Math.random() * 0.5 + 0.2,
+      opacity: Math.random() * 0.5 + 0.2
+    });
+  }
+
+  // Initialize perspective lines (Highway lanes)
+  for (let i = 0; i < lineCount; i++) {
+    lines.push({
+      angle: (i / (lineCount - 1)) * Math.PI - Math.PI,
+      offset: Math.random() * 100
+    });
+  }
+
+  let time = 0;
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    time += 0.01;
+
+    // ─── Draw Perspective Grid ───
+    ctx.strokeStyle = 'rgba(0, 229, 255, 0.05)';
+    ctx.lineWidth = 1;
     
-    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(0, 5, 20);
+    const vanishingPoint = { x: w / 2, y: h * 0.4 };
     
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    container.appendChild(renderer.domElement);
-
-    // ─── Cyber-Physical Grid ───
-    const gridSize = 60;
-    const gridDivisions = 30;
-    const gridHelper = new THREE.GridHelper(gridSize, gridDivisions, 0x00e5ff, 0x00e5ff);
-    gridHelper.material.opacity = 0.2;
-    gridHelper.material.transparent = true;
-    gridHelper.position.y = -2;
-    scene.add(gridHelper);
-
-    // ─── Glowing Particles (Data Points) ───
-    const particleCount = 200;
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const velocities = [];
-
-    for (let i = 0; i < particleCount; i++) {
-        positions[i * 3] = (Math.random() - 0.5) * 40;
-        positions[i * 3 + 1] = Math.random() * 10 - 2;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
-        
-        velocities.push({
-            y: Math.random() * 0.02 + 0.01
-        });
+    // Vertical Perspective Lines
+    for (let i = -10; i <= 10; i++) {
+      ctx.beginPath();
+      ctx.moveTo(vanishingPoint.x, vanishingPoint.y);
+      ctx.lineTo(w / 2 + i * (w / 5), h);
+      ctx.stroke();
     }
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const material = new THREE.PointsMaterial({
-        color: 0x00e5ff,
-        size: 0.15,
-        transparent: true,
-        opacity: 0.8,
-        blending: THREE.AdditiveBlending
-    });
-
-    const particles = new THREE.Points(geometry, material);
-    scene.add(particles);
-
-    // ─── Center "Drone" abstract representation ───
-    const coreGeo = new THREE.OctahedronGeometry(0.8, 0);
-    const coreMat = new THREE.MeshBasicMaterial({ 
-        color: 0x00d68f, 
-        wireframe: true,
-        transparent: true,
-        opacity: 0.8
-    });
-    const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-    coreMesh.position.y = 2;
-    scene.add(coreMesh);
-
-    // Outer ring
-    const ringGeo = new THREE.TorusGeometry(1.5, 0.05, 16, 100);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.5 });
-    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.position.y = 2;
-    ringMesh.rotation.x = Math.PI / 2;
-    scene.add(ringMesh);
-
-    // ─── Animation Loop ───
-    const clock = new THREE.Clock();
-
-    function animate() {
-        requestAnimationFrame(animate);
-        const elapsedTime = clock.getElapsedTime();
-
-        // Rotate center object
-        coreMesh.rotation.y += 0.01;
-        coreMesh.rotation.x += 0.005;
-        
-        ringMesh.rotation.z -= 0.005;
-        
-        // Bobbing motion
-        coreMesh.position.y = 2 + Math.sin(elapsedTime * 2) * 0.2;
-        ringMesh.position.y = 2 + Math.sin(elapsedTime * 2) * 0.2;
-
-        // Move particles
-        const posAttribute = geometry.getAttribute('position');
-        for (let i = 0; i < particleCount; i++) {
-            let y = posAttribute.getY(i);
-            y += velocities[i].y;
-            
-            if (y > 10) {
-                y = -2;
-            }
-            posAttribute.setY(i, y);
-        }
-        posAttribute.needsUpdate = true;
-
-        // Subtle camera movement
-        camera.position.x = Math.sin(elapsedTime * 0.2) * 5;
-        camera.lookAt(0, 2, 0);
-
-        renderer.render(scene, camera);
+    // Horizontal moving lines (motion feel)
+    ctx.strokeStyle = 'rgba(0, 229, 255, 0.1)';
+    for (let i = 0; i < 10; i++) {
+      const yPos = vanishingPoint.y + (( (i + (time * 2)) % 10 ) / 10) * (h - vanishingPoint.y);
+      const width = ((yPos - vanishingPoint.y) / (h - vanishingPoint.y)) * w * 2;
+      ctx.beginPath();
+      ctx.moveTo(w/2 - width/2, yPos);
+      ctx.lineTo(w/2 + width/2, yPos);
+      ctx.stroke();
     }
 
-    animate();
+    // ─── Draw Floating Particles ───
+    particles.forEach(p => {
+      ctx.fillStyle = `rgba(0, 229, 255, ${p.opacity})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
 
-    // ─── Handle Resize ───
-    window.addEventListener('resize', () => {
-        if (!container) return;
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
+      p.y -= p.speed;
+      if (p.y < 0) {
+        p.y = h;
+        p.x = Math.random() * w;
+      }
     });
+
+    // ─── Scan Line Effect ───
+    const scanY = (Math.sin(time * 0.5) * 0.5 + 0.5) * h;
+    const gradient = ctx.createLinearGradient(0, scanY - 50, 0, scanY + 50);
+    gradient.addColorStop(0, 'transparent');
+    gradient.addColorStop(0.5, 'rgba(0, 229, 255, 0.1)');
+    gradient.addColorStop(1, 'transparent');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, scanY - 50, w, 100);
+
+    // ─── Radar Pulse ───
+    const pulseRadius = (time % 4) * (w / 4);
+    ctx.strokeStyle = `rgba(0, 229, 255, ${1 - (time % 4) / 4})`;
+    ctx.beginPath();
+    ctx.arc(w/2, h/2, pulseRadius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
 }

@@ -1,433 +1,457 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AeroMind Sentinel | AI-Powered Smart Highway Monitoring</title>
-  <meta name="description" content="AeroMind Sentinel is an AI-powered smart highway monitoring and emergency response system for Egypt." />
+  <meta name="description" content="AeroMind Sentinel is a premium AI-powered drone surveillance system for smart highway monitoring and emergency response in Egypt." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚁</text></svg>">
+  
   <link rel="stylesheet" href="/static/css/sentinel.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
-    /* ─── Hackathon Specific Custom Styles ─── */
-    .hero-container { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; z-index: 1; padding-top: 5rem; }
-    #hero-3d-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.8; pointer-events: none; }
+    /* Custom layout tweaks for premium feel */
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+    section { padding: 8rem 0; }
     
-    .toggle-container { display: flex; align-items: center; gap: 0.75rem; background: rgba(0,229,255,0.05); padding: 0.5rem 1rem; border-radius: 999px; border: 1px solid rgba(0,229,255,0.2); }
-    .toggle-switch { position: relative; width: 44px; height: 24px; }
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .3s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: var(--text-main); transition: .3s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--accent-emerald); }
-    input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
+    .hero { min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding: 0; }
+    #hero-3d-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
     
-    .pipeline-step { padding: 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 8px; text-align: center; position: relative; }
-    .pipeline-arrow { text-align: center; color: var(--accent-cyan); font-size: 1.5rem; margin: 1rem 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
     
-    .bmc-card { background: var(--surface-glass); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1.5rem; }
-    .bmc-card h4 { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 0.1em; }
-    .bmc-card ul { padding-left: 1.25rem; color: var(--text-muted); font-size: 0.9rem; margin: 0; }
-    .bmc-card li { margin-bottom: 0.5rem; }
+    .hud-element { position: absolute; font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-cyan); opacity: 0.5; pointer-events: none; }
+    .hud-tl { top: 2rem; left: 2rem; }
+    .hud-tr { top: 2rem; right: 2rem; text-align: right; }
+    .hud-bl { bottom: 2rem; left: 2rem; }
+    .hud-br { bottom: 2rem; right: 2rem; text-align: right; }
+    
+    /* BMC Layout */
+    .bmc-grid {
+      display: grid;
+      grid-template-areas: 
+        "partners activities proposition relationships segments"
+        "partners resources proposition channels segments"
+        "cost cost revenue revenue revenue";
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(3, 200px);
+      gap: 1rem;
+    }
+    .bmc-box { background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 12px; }
+    .bmc-box h4 { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 1rem; }
+    .bmc-box ul { list-style: none; color: var(--text-muted); font-size: 0.85rem; }
+    .bmc-box li { margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 0.5rem; }
+    .bmc-box li::before { content: '>'; color: var(--accent-cyan); }
+
+    .status-active { color: var(--accent-emerald); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    /* Alert Items */
+    .alert-item { padding: 1rem; border-radius: 8px; border-left: 4px solid var(--accent-cyan); background: rgba(255,255,255,0.03); margin-bottom: 0.75rem; }
+    .alert-item.critical { border-color: var(--accent-red); background: rgba(239, 68, 68, 0.05); }
+    .alert-item.high { border-color: var(--accent-amber); }
+    .alert-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; font-size: 0.85rem; }
+    .alert-msg { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* Timeline */
+    .timeline-feed { max-height: 300px; overflow-y: auto; }
+    .timeline-row { display: grid; grid-template-columns: 80px 1fr 80px; gap: 1rem; font-family: var(--font-mono); font-size: 0.75rem; padding: 0.5rem; border-bottom: 1px solid var(--border-subtle); }
+    .timeline-row .time { color: var(--text-dim); }
+    .timeline-row .severity.critical { color: var(--accent-red); }
+    .timeline-row .severity.high { color: var(--accent-amber); }
   </style>
 </head>
 <body>
-  <div id="hero-3d-canvas"></div>
+  <div class="bg-mesh"></div>
+  <div class="grid-overlay"></div>
 
-  <nav class="dashboard-nav" style="background: rgba(3,7,18,0.8); backdrop-filter: blur(10px);">
-    <a class="brand" href="#top"><span>AS</span> AeroMind Sentinel</a>
-    <div class="nav-links">
-      <a href="#problem">Problem</a>
-      <a href="#solution">Solution</a>
-      <a href="#pipeline">Pipeline</a>
-      <a href="#demo">Live Demo</a>
-      <a href="#results">KPIs</a>
-      <a href="#business">Business</a>
-      <a class="nav-btn" href="/report"><i class="fas fa-file-alt"></i> Report</a>
-    </div>
+  <nav class="nav-premium">
+    <a href="#hero" class="nav-link active">Home</a>
+    <a href="#problem" class="nav-link">Problem</a>
+    <a href="#solution" class="nav-link">Solution</a>
+    <a href="#simulation" class="nav-link">Simulation</a>
+    <a href="#metrics" class="nav-link">KPIs</a>
+    <a href="#business" class="nav-link">Business</a>
+    <a href="#roadmap" class="nav-link">Roadmap</a>
   </nav>
 
-  <main id="top" style="padding-top: 0;">
-    <section class="hero-container">
-      <div class="grid-2" style="align-items: center;">
-        <div>
-          <div class="header-tag">AI for Egypt Real Problems Hackathon</div>
-          <h1 style="font-size: clamp(3rem, 6vw, 4.5rem); margin-bottom: 0.5rem;">AeroMind <span>Sentinel</span></h1>
-          <p class="lead" style="font-size: 1.5rem; color: var(--text-main); margin-bottom: 1rem;">
-            <strong>AI-Powered Smart Highway Monitoring & Emergency Response System.</strong>
-          </p>
-          <p style="font-size: 1.1rem; max-width: 600px;">
-            Autonomous drone intelligence for detecting highway accidents, congestion, stopped vehicles, pedestrians, blocked lanes, and emergency risk zones in real time.
-          </p>
-          <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
-            <a class="btn btn-primary" href="#demo">Watch Live Simulation</a>
-            <a class="btn btn-outline" href="#business">View Business Model</a>
-            <a class="btn btn-outline" href="/report">View Technical Report</a>
-          </div>
-        </div>
-      </div>
-    </section>
+  <main id="hero" class="hero">
+    <div id="hero-3d-canvas"></div>
+    
+    <div class="hud-tl hud-element">
+      AEROMIND SENTINEL v1.0.4<br/>
+      SYS_STATUS: <span class="status-active">OPERATIONAL</span><br/>
+      LOCATION: 30.0444° N, 31.2357° E
+    </div>
+    
+    <div class="hud-tr hud-element">
+      DRONE_SIG: ENCRYPTED<br/>
+      UPTIME: 98.4%<br/>
+      POWER_MODE: AI_OPTIMIZED
+    </div>
 
-    <section id="problem">
-      <div class="section-label">
-        <span class="section-num">01</span>
-        <span class="section-title">Problem in Egypt</span>
-        <span class="section-line"></span>
-      </div>
-      <h2>Highways need faster incident detection and mobile AI coverage.</h2>
-      <div class="grid-3">
-        <article class="card"><h3>Highway accidents</h3><p>High-speed corridors can turn small incidents into multi-vehicle emergencies when accidents are detected late.</p></article>
-        <article class="card"><h3>Delayed incident detection</h3><p>Manual reporting and limited visibility slow emergency dispatch, especially on long desert highways and ring roads.</p></article>
-        <article class="card"><h3>Sudden congestion</h3><p>Stopped vehicles, lane blockage, and accidents can create rapid congestion waves that fixed sensors may miss.</p></article>
-        <article class="card"><h3>Limited fixed camera coverage</h3><p>Static infrastructure cannot cover every segment, blind spot, construction zone, or temporary risk area.</p></article>
-        <article class="card"><h3>Slow emergency response</h3><p>Without precise, real-time aerial context, emergency services cannot prioritize or route effectively.</p></article>
-        <article class="card"><h3>Need for AI mobile monitoring</h3><p>Egypt's smart transportation vision requires intelligence that moves toward risk dynamically.</p></article>
-      </div>
-    </section>
-
-    <section id="solution">
-      <div class="section-label">
-        <span class="section-num">02</span>
-        <span class="section-title">Proposed Solution</span>
-        <span class="section-line"></span>
-      </div>
-      <h2>Autonomous drone monitoring for smart highway emergency response.</h2>
+    <div class="container">
       <div class="grid-2">
-        <article class="card"><span class="badge badge-cyan">Perception</span><h3 style="margin-top:1rem;">Real-time incident detection</h3><p>Detects vehicles, stopped vehicles, pedestrians, road hazards, congestion, blocked lanes, and possible accidents from aerial video.</p></article>
-        <article class="card"><span class="badge badge-cyan">Persistence</span><h3 style="margin-top:1rem;">Multi-object tracking</h3><p>Maintains target identities over time so the system understands movement, stoppage, and incident evolution.</p></article>
-        <article class="card"><span class="badge badge-emerald">Analytics</span><h3 style="margin-top:1rem;">Highway risk scoring</h3><p>The Highway Risk Engine converts detections into 0-100 risk scores, severity labels, and coverage priorities.</p></article>
-        <article class="card"><span class="badge badge-emerald">Action</span><h3 style="margin-top:1rem;">Adaptive drone navigation</h3><p>PPO reinforcement learning moves the drone toward high-risk zones while preserving battery and extending mission duration.</p></article>
-      </div>
-    </section>
-
-    <section id="pipeline">
-      <div class="section-label">
-        <span class="section-num">03</span>
-        <span class="section-title">How It Works</span>
-        <span class="section-line"></span>
-      </div>
-      <h2>The Technical Pipeline</h2>
-      <div style="max-width: 800px; margin: 0 auto;">
-        <div class="pipeline-step" style="border-color: rgba(255,255,255,0.2);"><strong>Drone Camera + Telemetry</strong></div>
-        <div class="pipeline-arrow">↓</div>
-        <div class="pipeline-step" style="border-color: var(--accent-cyan);"><strong>YOLOv8 + SAHI Detection</strong></div>
-        <div class="pipeline-arrow">↓</div>
-        <div class="pipeline-step" style="border-color: var(--accent-cyan);"><strong>BoT-SORT + OSNet Tracking</strong></div>
-        <div class="pipeline-arrow">↓</div>
-        <div class="pipeline-step" style="border-color: var(--accent-amber);"><strong>Highway Risk Analysis Engine</strong></div>
-        <div class="pipeline-arrow">↓</div>
-        <div class="pipeline-step" style="border-color: var(--accent-emerald);"><strong>PPO Energy-Aware Navigation</strong></div>
-        <div class="pipeline-arrow">↓</div>
-        <div class="pipeline-step" style="border-color: var(--accent-red);"><strong>Emergency Dashboard + Alerts</strong></div>
-      </div>
-    </section>
-
-    <section id="demo">
-      <div class="section-label">
-        <span class="section-num">04</span>
-        <span class="section-title">Live Highway Simulation</span>
-        <span class="section-line"></span>
-      </div>
-      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
-        <div>
-          <h2>Interactive emergency monitoring simulation.</h2>
-          <p style="margin: 0; color: var(--text-muted);">Demonstrates how the system reacts differently in various scenarios.</p>
-        </div>
-        <div class="toggle-container">
-          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Mock Demo</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="airsim-toggle">
-            <span class="slider"></span>
-          </label>
-          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-emerald);">Live Video Inference</span>
-        </div>
-      </div>
-      
-      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;" class="demo-controls">
-        <button class="btn btn-outline" data-scenario="normal">Normal Traffic</button>
-        <button class="btn btn-outline" data-scenario="stopped">Stopped Vehicle</button>
-        <button class="btn btn-outline" data-scenario="accident">Accident Detected</button>
-        <button class="btn btn-outline" data-scenario="congestion">Congestion Building</button>
-        <button class="btn btn-outline" data-scenario="pedestrian">Pedestrian on Highway</button>
-        <button class="btn btn-outline" data-scenario="blocked">Blocked Lane</button>
-      </div>
-      
-      <div class="grid-2" style="grid-template-columns: 1.5fr 1fr;">
-        <div id="live-feed" style="min-height: 450px; border-radius: 12px; border: 1px solid var(--border-subtle); background: linear-gradient(to bottom, rgba(15,23,42,0.8), rgba(3,7,18,0.9)); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-          <div style="position: absolute; top: 1rem; left: 1rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-emerald); font-weight: bold; z-index: 10;"><span class="status-dot active"></span> <span id="feed-source">Scenario simulation</span></div>
-          
-          <img id="mjpeg-stream" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 1;" />
-          
-          <!-- Highway aerial background -->
-          <img id="highway-video" src="/static/assets/highway_aerial.png" alt="Highway aerial view" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.45; filter: brightness(0.7);" />
-          <div id="mock-bg" style="position: absolute; top:0; bottom:0; left: 40%; right: 40%; background: #222; border-left: 2px dashed #555; border-right: 2px dashed #555; opacity: 0.3; z-index: 0; display: none;"></div>
-        </div>
-        
-        <aside class="card">
-          <h3>Mission Control</h3>
-          <div class="grid-2" style="margin-bottom: 1.5rem;">
-            <div><div id="risk-score" class="metric cyan">0</div><div class="metric-label">Risk score</div></div>
-            <div><div style="margin-bottom: 0.5rem;"><span id="risk-severity" class="badge badge-emerald">LOW</span></div><div class="metric-label">Severity</div></div>
-            <div><div id="battery-level" class="metric">91%</div><div class="metric-label">Battery</div></div>
-            <div><div id="mission-mode" class="metric" style="font-size:1.5rem; padding-top:0.5rem;">Patrol</div><div class="metric-label">Mode</div></div>
-          </div>
-          <div style="padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 1.5rem;">
-            <p id="mission-summary" style="margin: 0; font-size: 0.9rem;">Mission summary loading...</p>
-          </div>
-          <h4>Emergency Response</h4>
-          <p id="response-recommendation" style="font-size: 0.9rem;">Select a scenario.</p>
-          <div id="alert-panel" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; max-height: 250px; overflow-y: auto;"></div>
-        </aside>
-      </div>
-    </section>
-
-    <section id="risk-engine">
-      <div class="section-label">
-        <span class="section-num">05</span>
-        <span class="section-title">Highway Risk Engine</span>
-        <span class="section-line"></span>
-      </div>
-      <h2>How the system calculates highway risk.</h2>
-      <div class="grid-2">
-        <div class="card">
-          <h3 style="margin-bottom: 1.5rem;">Risk Inputs</h3>
-          <div class="grid-2" style="gap: 1rem;">
-            <div><span class="status-dot idle"></span> Event type</div>
-            <div><span class="status-dot idle"></span> Object type</div>
-            <div><span class="status-dot idle"></span> Detection confidence</div>
-            <div><span class="status-dot idle"></span> Traffic density</div>
-            <div><span class="status-dot idle"></span> Vehicle speed</div>
-            <div><span class="status-dot idle"></span> Distance to risk zone</div>
-            <div><span class="status-dot idle"></span> Lane position</div>
-            <div><span class="status-dot idle"></span> Tracking stability</div>
+        <div class="hero-content reveal">
+          <span class="section-tag">AI for Egypt Real Problems</span>
+          <h1 style="font-size: 5rem; margin-bottom: 1.5rem;">AeroMind<br/><span>Sentinel</span></h1>
+          <p class="lead" style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 3rem; max-width: 600px;">
+            Autonomous drone intelligence for detecting highway accidents, congestion, stopped vehicles, and emergency risk zones in real time.
+          </p>
+          <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+            <a href="#simulation" class="btn-premium btn-primary">Watch Live Demo <i class="fas fa-play-circle"></i></a>
+            <a href="#business" class="btn-premium btn-outline">Business Model</a>
           </div>
         </div>
-        <div class="card">
-          <h3 style="margin-bottom: 1.5rem;">Severity Levels</h3>
-          <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <div style="display: flex; align-items: center; justify-content: space-between;"><span class="severity-pill low" style="width: 80px; text-align: center;">LOW</span> <span style="font-family: var(--font-mono); color: var(--text-muted);">0.00 – 0.30</span></div>
-            <div style="display: flex; align-items: center; justify-content: space-between;"><span class="severity-pill medium" style="width: 80px; text-align: center;">MEDIUM</span> <span style="font-family: var(--font-mono); color: var(--text-muted);">0.31 – 0.60</span></div>
-            <div style="display: flex; align-items: center; justify-content: space-between;"><span class="severity-pill high" style="width: 80px; text-align: center;">HIGH</span> <span style="font-family: var(--font-mono); color: var(--text-muted);">0.61 – 0.85</span></div>
-            <div style="display: flex; align-items: center; justify-content: space-between;"><span class="severity-pill critical" style="width: 80px; text-align: center;">CRITICAL</span> <span style="font-family: var(--font-mono); color: var(--text-muted);">0.86 – 1.00</span></div>
+        <div class="hero-visual reveal" style="transition-delay: 0.2s;">
+          <div class="card-premium" style="background: rgba(2, 6, 23, 0.4);">
+             <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+               <div>
+                 <div class="metric-label">Mission Status</div>
+                 <div style="color: var(--accent-emerald); font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+                   <span class="status-active">●</span> ACTIVE_SCANNING
+                 </div>
+               </div>
+               <div style="text-align: right;">
+                 <div class="metric-label">Target Confidence</div>
+                 <div style="color: var(--accent-cyan); font-weight: 800;">94.2%</div>
+               </div>
+             </div>
+             <div class="pipeline-line" style="position: relative; left: 0; height: 4px; width: 100%; background: rgba(255,255,255,0.05); margin-bottom: 1rem;">
+               <div style="width: 85%; height: 100%; background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan);"></div>
+             </div>
+             <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim);">
+               > RUNNING YOLOv8_SAHI_INFERENCE...<br/>
+               > TRACKING ACTIVE_TARGETS [14]<br/>
+               > RISK_SCORE: 22 [NORMAL]
+             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </main>
 
-    <section id="results">
-      <div class="section-label">
-        <span class="section-num">06</span>
-        <span class="section-title">Metrics & KPIs</span>
-        <span class="section-line"></span>
+  <section id="problem">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 5rem;">
+        <span class="section-tag">01 · Problem</span>
+        <h2 style="font-size: 3.5rem;">Highway Safety in Egypt</h2>
       </div>
-      <h2>Performance and product metrics.</h2>
-      <div class="grid-4">
-        <!-- Original Core Metrics -->
-        <div class="card"><div class="metric cyan">83.2%</div><div class="metric-label">MOTA</div><div class="progress-bar"><div class="progress-fill" style="width: 83.2%"></div></div></div>
-        <div class="card"><div class="metric cyan">78.5%</div><div class="metric-label">IDF1</div><div class="progress-bar"><div class="progress-fill" style="width: 78.5%"></div></div></div>
-        <div class="card"><div class="metric">11</div><div class="metric-label">ID switches / 1k</div><div class="progress-bar"><div class="progress-fill" style="width: 35%"></div></div></div>
-        <div class="card"><div class="metric emerald">34.8%</div><div class="metric-label">Energy saved</div><div class="progress-bar"><div class="progress-fill" style="width: 70%"></div></div></div>
-        
-        <!-- Sentinel Specific KPIs -->
-        <div class="card"><div class="metric">&lt;15s</div><div class="metric-label">Incident detection time</div><div class="progress-bar"><div class="progress-fill" style="width: 88%"></div></div></div>
-        <div class="card"><div class="metric">~45ms</div><div class="metric-label">Alert latency</div><div class="progress-bar"><div class="progress-fill" style="width: 92%"></div></div></div>
-        <div class="card"><div class="metric cyan">87%</div><div class="metric-label">High-risk zone coverage</div><div class="progress-bar"><div class="progress-fill" style="width: 87%"></div></div></div>
-        <div class="card"><div class="metric emerald">91%</div><div class="metric-label">Emergency support score</div><div class="progress-bar"><div class="progress-fill" style="width: 91%"></div></div></div>
-      </div>
-    </section>
-
-    <section id="business">
-      <div class="section-label">
-        <span class="section-num">07</span>
-        <span class="section-title">Business Model</span>
-        <span class="section-line"></span>
-      </div>
-      <h2>Scalable AI product for smart infrastructure.</h2>
-      
-      <!-- Pitch Deck Visuals: Market & Roadmap -->
-      <div class="grid-2" style="margin-bottom: 2rem;">
-        <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
-          <h3 style="color: var(--accent-cyan);"><i class="fas fa-chart-line"></i> Market Size (TAM)</h3>
-          <p style="font-size: 2.5rem; font-weight: bold; margin: 0.5rem 0;">$4.2 Billion</p>
-          <p style="color: var(--text-muted);">Global Smart Highway Market by 2028</p>
-          <div class="progress-bar" style="height: 8px; margin-top: 1rem;"><div class="progress-fill" style="width: 85%; background: var(--accent-cyan);"></div></div>
-        </div>
-        <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
-          <h3 style="color: var(--accent-emerald);"><i class="fas fa-map-marked-alt"></i> Pilot Deployment Roadmap</h3>
-          <ul style="list-style: none; padding: 0; margin-top: 1rem; color: var(--text-muted);">
-            <li style="margin-bottom: 0.5rem;"><strong>Q3 2026:</strong> Initial Drone Tests (AirSim to Reality)</li>
-            <li style="margin-bottom: 0.5rem;"><strong>Q4 2026:</strong> Cairo Ring Road Pilot Deployment</li>
-            <li style="margin-bottom: 0.5rem;"><strong>Q2 2027:</strong> Regional Expansion across Egypt</li>
-          </ul>
-        </div>
-      </div>
-
       <div class="grid-3">
-        <div class="bmc-card">
-          <h4>Customer Segments</h4>
-          <ul>
-            <li>Traffic authorities</li>
-            <li>Road operators</li>
-            <li>Smart cities</li>
-            <li>Emergency response agencies</li>
-            <li>Logistics companies</li>
-            <li>Insurance companies</li>
+        <div class="card-premium reveal">
+          <i class="fas fa-car-crash" style="font-size: 2rem; color: var(--accent-red); margin-bottom: 1.5rem;"></i>
+          <h3>High Accident Rate</h3>
+          <p>Egyptian highways face thousands of incidents annually that require immediate visual verification and response coordination.</p>
+        </div>
+        <div class="card-premium reveal" style="transition-delay: 0.1s;">
+          <i class="fas fa-clock" style="font-size: 2rem; color: var(--accent-amber); margin-bottom: 1.5rem;"></i>
+          <h3>Delayed Detection</h3>
+          <p>Manual reporting and fixed sensors create critical delays in detecting accidents on long desert roads and crowded ring roads.</p>
+        </div>
+        <div class="card-premium reveal" style="transition-delay: 0.2s;">
+          <i class="fas fa-video-slash" style="font-size: 2rem; color: var(--accent-purple); margin-bottom: 1.5rem;"></i>
+          <h3>Limited Coverage</h3>
+          <p>Fixed camera infrastructure cannot cover every kilometer, creating blind spots in high-risk zones and construction areas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="solution" style="background: rgba(255,255,255,0.01);">
+    <div class="container">
+      <div class="grid-2">
+        <div class="reveal">
+          <span class="section-tag">02 · Solution</span>
+          <h2 style="font-size: 3.5rem; margin-bottom: 2rem;">Aerial AI<br/>Intelligence</h2>
+          <p class="lead" style="margin-bottom: 2rem;">AeroMind Sentinel turns autonomous drones into 24/7 highway guardians, detecting and prioritizing risks before they escalate.</p>
+          <ul style="list-style: none; display: grid; gap: 1rem;">
+            <li style="display: flex; gap: 1rem;"><i class="fas fa-check-circle" style="color: var(--accent-emerald);"></i> Real-time Incident Perception</li>
+            <li style="display: flex; gap: 1rem;"><i class="fas fa-check-circle" style="color: var(--accent-emerald);"></i> Energy-Aware Mission Planning</li>
+            <li style="display: flex; gap: 1rem;"><i class="fas fa-check-circle" style="color: var(--accent-emerald);"></i> Automated Emergency Dispatch</li>
           </ul>
         </div>
-        <div class="bmc-card">
-          <h4>Revenue Streams</h4>
-          <ul>
-            <li>SaaS dashboard subscription</li>
-            <li>Drone-as-a-Service</li>
-            <li>Government contracts</li>
-            <li>AI risk engine licensing</li>
-            <li>Analytics reports</li>
-          </ul>
+        <div class="pipeline-container">
+          <div class="pipeline-line"><div class="line-pulse"></div></div>
+          <div class="pipeline-step active">
+            <div class="step-icon"><i class="fas fa-camera"></i></div>
+            <div class="step-content"><h4>Perception</h4><p>YOLOv8 + SAHI for small-object highway detection.</p></div>
+          </div>
+          <div class="pipeline-step active" style="transition-delay: 0.2s;">
+            <div class="step-icon"><i class="fas fa-route"></i></div>
+            <div class="step-content"><h4>Persistence</h4><p>BoT-SORT + OSNet for robust multi-vehicle tracking.</p></div>
+          </div>
+          <div class="pipeline-step active" style="transition-delay: 0.4s;">
+            <div class="step-icon"><i class="fas fa-brain"></i></div>
+            <div class="step-content"><h4>Risk Engine</h4><p>Dynamic scoring of traffic anomalies and hazards.</p></div>
+          </div>
         </div>
-        <div class="bmc-card">
+      </div>
+    </div>
+  </section>
+
+  <section id="simulation">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem;">
+        <div>
+          <span class="section-tag">03 · Interactive Demo</span>
+          <h2 style="font-size: 3.5rem;">Mission Control</h2>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn-premium btn-outline active" data-scenario="normal">Normal</button>
+          <button class="btn-premium btn-outline" data-scenario="accident">Accident</button>
+          <button class="btn-premium btn-outline" data-scenario="congestion">Congestion</button>
+          <button class="btn-premium btn-outline" data-scenario="emergency">Emergency</button>
+        </div>
+      </div>
+
+      <div class="sim-dashboard">
+        <div id="sim-canvas-container">
+          <div class="sim-hud">
+            <div class="hud-top">
+              <div class="hud-tag">ID: SENTINEL-01</div>
+              <div class="hud-tag">ALT: 120m | SPD: 45km/h</div>
+            </div>
+            <div class="hud-bottom">
+              <div class="hud-stats">
+                COORDS: 30.04°N, 31.23°E<br/>
+                SAT_LINK: STRONG [98ms]
+              </div>
+              <div id="risk-severity-tag" class="hud-tag">NORMAL</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-controls">
+          <div class="card-premium" style="height: 100%;">
+            <div style="margin-bottom: 2rem;">
+              <div class="metric-label">Highway Risk Score</div>
+              <div id="risk-score-value" class="metric-value">12</div>
+              <div class="progress-bar" style="height: 4px; background: rgba(255,255,255,0.05); margin-top: 1rem;">
+                <div id="risk-fill" style="width: 12%; height: 100%; background: var(--accent-cyan);"></div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+              <div class="metric-label">Drone Battery</div>
+              <div id="battery-value" class="metric-value" style="font-size: 1.5rem; color: var(--accent-emerald);">98.2%</div>
+              <div class="progress-bar" style="height: 4px; background: rgba(255,255,255,0.05); margin-top: 0.5rem;">
+                <div id="battery-fill" style="width: 98%; height: 100%; background: var(--accent-emerald);"></div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+              <div class="metric-label">Active Alerts</div>
+              <div id="alert-panel" style="margin-top: 1rem;">
+                <p style="font-size: 0.8rem; color: var(--text-dim);">No active alerts.</p>
+              </div>
+            </div>
+
+            <div>
+              <div class="metric-label">Recommended Action</div>
+              <p id="mission-summary-text" style="font-size: 0.85rem; color: var(--accent-cyan); margin-top: 0.5rem;">Maintain autonomous patrol.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-premium" style="margin-top: 2rem; padding: 1.5rem;">
+        <div class="metric-label" style="margin-bottom: 1rem;">Mission Timeline Log</div>
+        <div id="timeline-feed" class="timeline-feed">
+          <!-- Timeline entries -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="metrics">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 5rem;">
+        <span class="section-tag">04 · Results</span>
+        <h2 style="font-size: 3.5rem;">Performance Benchmarks</h2>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-card reveal">
+          <div class="metric-value">83.2%</div>
+          <div class="metric-label">MOTA</div>
+        </div>
+        <div class="metric-card reveal" style="transition-delay: 0.1s;">
+          <div class="metric-value">78.5%</div>
+          <div class="metric-label">IDF1</div>
+        </div>
+        <div class="metric-card reveal" style="transition-delay: 0.2s;">
+          <div class="metric-value">34.8%</div>
+          <div class="metric-label">Energy Saved</div>
+        </div>
+        <div class="metric-card reveal" style="transition-delay: 0.3s;">
+          <div class="metric-value">15s</div>
+          <div class="metric-label">Detection Latency</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="business">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 5rem;">
+        <span class="section-tag">05 · Business</span>
+        <h2 style="font-size: 3.5rem;">Business Model Canvas</h2>
+      </div>
+      <div class="bmc-grid">
+        <div class="bmc-box" style="grid-area: partners;">
           <h4>Key Partners</h4>
           <ul>
-            <li>Drone hardware manufacturers</li>
-            <li>Telecom providers (5G)</li>
-            <li>Civil defense & ambulance</li>
-            <li>Cloud providers</li>
+            <li>Traffic Police</li>
+            <li>Civil Defense</li>
+            <li>Telecom (5G)</li>
           </ul>
         </div>
-        <div class="bmc-card">
+        <div class="bmc-box" style="grid-area: activities;">
+          <h4>Key Activities</h4>
+          <ul>
+            <li>Drone Patrol</li>
+            <li>AI Risk Analysis</li>
+            <li>Incident Logging</li>
+          </ul>
+        </div>
+        <div class="bmc-box" style="grid-area: proposition;">
           <h4>Value Proposition</h4>
           <ul>
-            <li>Immediate visual incident verification</li>
-            <li>Autonomous patrol without pilot fatigue</li>
-            <li>Faster emergency dispatch</li>
-            <li>Reduced secondary accident risks</li>
+            <li>Instant Awareness</li>
+            <li>Faster Dispatch</li>
+            <li>Reduced Risk</li>
           </ul>
         </div>
-        <div class="bmc-card">
+        <div class="bmc-box" style="grid-area: relationships;">
+          <h4>Relationships</h4>
+          <ul>
+            <li>SaaS Dashboard</li>
+            <li>Direct Support</li>
+          </ul>
+        </div>
+        <div class="bmc-box" style="grid-area: segments;">
+          <h4>Segments</h4>
+          <ul>
+            <li>Road Operators</li>
+            <li>Smart Cities</li>
+            <li>Insurance</li>
+          </ul>
+        </div>
+        <div class="bmc-box" style="grid-area: resources;">
           <h4>Key Resources</h4>
           <ul>
             <li>AeroMind AI Core</li>
-            <li>Highway Risk Engine</li>
-            <li>Edge computing hardware</li>
-            <li>Cloud backend infrastructure</li>
+            <li>Drone Fleet</li>
           </ul>
         </div>
-        <div class="bmc-card">
+        <div class="bmc-box" style="grid-area: channels;">
+          <h4>Channels</h4>
+          <ul>
+            <li>Command Center</li>
+            <li>Mobile Alerts</li>
+          </ul>
+        </div>
+        <div class="bmc-box" style="grid-area: cost;">
           <h4>Cost Structure</h4>
           <ul>
-            <li>Cloud & database hosting</li>
-            <li>Drone fleet maintenance (if DaaS)</li>
-            <li>AI R&D and training compute</li>
-            <li>Sales & marketing</li>
+            <li>Cloud & AI Compute</li>
+            <li>Hardware Maintenance</li>
+          </ul>
+        </div>
+        <div class="bmc-box" style="grid-area: revenue;">
+          <h4>Revenue Streams</h4>
+          <ul>
+            <li>SaaS Subscription</li>
+            <li>Data Licensing</li>
+            <li>Service Contracts</li>
           </ul>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="impact">
-      <div class="section-label">
-        <span class="section-num">08</span>
-        <span class="section-title">Egypt Impact</span>
-        <span class="section-line"></span>
+  <section id="roadmap">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 5rem;">
+        <span class="section-tag">06 · Roadmap</span>
+        <h2 style="font-size: 3.5rem;">Development Steps</h2>
       </div>
-      <div class="grid-2" style="align-items: center;">
-        <div>
-          <h2>AI for Egypt Real Problems</h2>
-          <p style="font-size: 1.1rem; line-height: 1.7; color: var(--text-muted);">
-            AeroMind Sentinel directly addresses the critical need for smart transportation and public safety in Egypt. 
-            By deploying autonomous AI to monitor long desert highways and crowded ring roads, we reduce emergency response times, save lives, and align directly with <strong>Egypt Vision 2030</strong> for sustainable, smart infrastructure.
-          </p>
-        </div>
-        <div class="card" style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 150px;">
-            <div class="metric cyan"><i class="fas fa-shield-alt"></i></div>
-            <h4 style="margin: 0.5rem 0;">Public Safety</h4>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Faster dispatch for ambulances and traffic police.</p>
-          </div>
-          <div style="flex: 1; min-width: 150px;">
-            <div class="metric emerald"><i class="fas fa-road"></i></div>
-            <h4 style="margin: 0.5rem 0;">Smart Transport</h4>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Modernizing Egypt's growing highway network.</p>
+      <div class="pipeline-container">
+        <div class="pipeline-line"></div>
+        <div class="pipeline-step reveal">
+          <div class="step-icon">01</div>
+          <div class="step-content">
+            <h4>Real Video Integration</h4>
+            <p>Moving from synthetic AirSim data to real Egyptian highway footage.</p>
           </div>
         </div>
+        <div class="pipeline-step reveal">
+          <div class="step-icon">02</div>
+          <div class="step-content">
+            <h4>Live Model Pipeline</h4>
+            <p>Connecting the web dashboard to real-time YOLOv8 inference servers.</p>
+          </div>
+        </div>
+        <div class="pipeline-step reveal">
+          <div class="step-icon">03</div>
+          <div class="step-content">
+            <h4>Pilot Deployment</h4>
+            <p>Testing on the Cairo Ring Road in collaboration with traffic authorities.</p>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="readiness">
-      <div class="section-label">
-        <span class="section-num">09</span>
-        <span class="section-title">Hackathon Readiness</span>
-        <span class="section-line"></span>
-      </div>
-      <div class="grid-4">
-        <article class="card"><h3 style="color: var(--accent-emerald);"><i class="fas fa-check-circle"></i> Functional Prototype</h3><p style="font-size: 0.85rem; color: var(--text-muted);">Fully integrated backend and dashboard.</p></article>
-        <article class="card"><h3 style="color: var(--accent-emerald);"><i class="fas fa-check-circle"></i> Live Simulation</h3><p style="font-size: 0.85rem; color: var(--text-muted);">Interactive AirSim scenarios and mock engine.</p></article>
-        <article class="card"><h3 style="color: var(--accent-emerald);"><i class="fas fa-check-circle"></i> Existing AI Pipeline</h3><p style="font-size: 0.85rem; color: var(--text-muted);">Proven YOLOv8, BoT-SORT, and PPO models.</p></article>
-        <article class="card"><h3 style="color: var(--accent-emerald);"><i class="fas fa-check-circle"></i> Pitch Deck Ready</h3><p style="font-size: 0.85rem; color: var(--text-muted);">Clear business model and market potential.</p></article>
-      </div>
-    </section>
-
-    <section id="roadmap">
-      <div class="section-label">
-        <span class="section-num">10</span>
-        <span class="section-title">Development Roadmap</span>
-        <span class="section-line"></span>
-      </div>
-      <h2>Next Development Milestones</h2>
-      <p style="max-width: 800px; color: var(--text-muted); margin-bottom: 2rem;">
-        AeroMind Sentinel currently demonstrates the core product workflow through a functional simulation prototype using structured mock highway events. The next development phase focuses on replacing mock events with live AI model outputs, adding real highway video assets, improving investor-facing pitch visuals, and documenting real deployment screenshots after the Vercel release.
+  <footer style="padding: 4rem 0; border-top: 1px solid var(--border-subtle); text-align: center;">
+    <div class="container">
+      <p style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim);">
+        © 2026 AeroMind Sentinel · Powered by AeroMind AI<br/>
+        AI for Egypt Real Problems Hackathon
       </p>
-      
-      <div style="display: flex; flex-direction: column; gap: 1rem;">
-        <div class="card" style="display: flex; gap: 1rem; align-items: flex-start;">
-          <div class="metric cyan"><i class="fas fa-video"></i></div>
-          <div>
-            <h3 style="margin-top: 0; margin-bottom: 0.5rem;">1. Real Highway Video Assets</h3>
-            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">We will integrate real or licensed highway video footage to demonstrate detection and tracking in more realistic traffic conditions.</p>
-          </div>
-        </div>
-        <div class="card" style="display: flex; gap: 1rem; align-items: flex-start;">
-          <div class="metric cyan"><i class="fas fa-brain"></i></div>
-          <div>
-            <h3 style="margin-top: 0; margin-bottom: 0.5rem;">2. Live Model Output Integration</h3>
-            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">The current mock highway events will be replaced with live outputs from YOLOv8, SAHI, BoT-SORT, and the Highway Risk Engine.</p>
-          </div>
-        </div>
-        <div class="card" style="display: flex; gap: 1rem; align-items: flex-start;">
-          <div class="metric cyan"><i class="fas fa-chart-pie"></i></div>
-          <div>
-            <h3 style="margin-top: 0; margin-bottom: 0.5rem;">3. Pitch Deck Visuals</h3>
-            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">We will add investor-ready visuals including market size, business model, customer segments, and pilot deployment roadmap.</p>
-          </div>
-        </div>
-        <div class="card" style="display: flex; gap: 1rem; align-items: flex-start;">
-          <div class="metric cyan"><i class="fas fa-cloud-upload-alt"></i></div>
-          <div>
-            <h3 style="margin-top: 0; margin-bottom: 0.5rem;">4. Deployment Screenshots</h3>
-            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">After the Vercel deployment is finalized, we will add real screenshots of the live product, dashboard, and simulation workflow.</p>
-          </div>
-        </div>
-        <div class="card" style="display: flex; gap: 1rem; align-items: flex-start;">
-          <div class="metric cyan"><i class="fas fa-code"></i></div>
-          <div>
-            <h3 style="margin-top: 0; margin-bottom: 0.5rem;">5. TypeScript Build Pipeline</h3>
-            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">A dedicated TypeScript validation and build pipeline can be added later to improve production reliability and CI/CD readiness.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="footer">
-    <div>© 2026 AeroMind Sentinel · Powered by AeroMind AI</div>
-    <div>YOLOv8 + SAHI · BoT-SORT + OSNet · PPO · AirSim</div>
+    </div>
   </footer>
 
   <script type="module">
     import { initThreeJS } from '/static/js/threeHero.js';
+    import { initSimulation } from '/static/js/sentinelDemo.js';
+
     document.addEventListener('DOMContentLoaded', () => {
-        initThreeJS();
+      initThreeJS();
+      initSimulation();
+
+      // Scroll Reveal Logic
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      // Nav Active State
+      const navLinks = document.querySelectorAll('.nav-link');
+      const sections = document.querySelectorAll('section, main');
+      
+      window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          if (pageYOffset >= sectionTop - 100) {
+            current = section.getAttribute('id');
+          }
+        });
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current)) {
+            link.classList.add('active');
+          }
+        });
+      });
     });
   </script>
-  <script type="module" src="/static/js/sentinelDemo.js"></script>
 </body>
 </html>
