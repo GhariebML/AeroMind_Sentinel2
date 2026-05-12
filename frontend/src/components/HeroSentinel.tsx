@@ -22,7 +22,7 @@ export default function HeroSentinel() {
       <div className="section-shell grid min-h-[calc(100vh-6rem)] items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
         <motion.div initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
           <div className="eyebrow"><Radio size={14} /> AI for Egypt Real Problems · System active</div>
-          <h1 className="max-w-5xl text-6xl font-black leading-[.9] tracking-[-0.075em] text-white sm:text-7xl lg:text-8xl">
+          <h1 className="max-w-5xl font-heading text-6xl font-black leading-[.9] tracking-[-0.075em] text-white sm:text-7xl lg:text-8xl">
             AeroMind <span className="bg-gradient-to-r from-cyan-200 via-blue-300 to-emerald-300 bg-clip-text text-transparent">Sentinel</span>
           </h1>
           <p className="mt-6 max-w-3xl text-2xl font-semibold text-cyan-100/95">AI-Powered Smart Highway Monitoring & Emergency Response System</p>
