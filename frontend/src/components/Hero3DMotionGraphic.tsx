@@ -13,7 +13,8 @@ export default function Hero3DMotionGraphic() {
 
     // Camera setup
     const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(0, 4, 12);
+    camera.position.set(0, 1.5, 11);
+    camera.lookAt(0, -0.8, 0);
 
     // Renderer setup
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
@@ -110,7 +111,7 @@ export default function Hero3DMotionGraphic() {
 
     // ── 4. Ground Scanning Field Below ──
     const scanGroup = new THREE.Group();
-    scanGroup.position.y = -3.5;
+    scanGroup.position.y = -2.5;
     scene.add(scanGroup);
 
     // Virtual target circular plane
