@@ -61,35 +61,21 @@ export default function HeroSentinel() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-6 mb-12"
+            className="flex items-center gap-4 mb-10"
           >
-            {/* Logo mark — premium glass container */}
-            <div className="relative flex-shrink-0">
-              <div className="absolute inset-0 rounded-2xl bg-cyan-400/10 blur-2xl scale-110" />
-              <div className="relative h-20 w-20 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] overflow-hidden">
-                <img src={logo} alt="AeroMind Sentinel" className="w-full h-full object-contain p-1.5" />
-              </div>
-            </div>
-
-            {/* Brand name lockup */}
-            <div className="flex flex-col">
-              <span className="block text-[10px] font-black uppercase tracking-[0.32em] text-cyan-400/80 leading-none mb-1.5">AeroMind</span>
-              <span className="block text-[28px] font-black tracking-tight text-white leading-none">Sentinel</span>
-              <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 leading-none mt-1.5">AI Highway Intelligence</span>
-            </div>
-
-            {/* Divider */}
-            <div className="hidden sm:block h-12 w-px bg-white/10 mx-2" />
-
             {/* Live status badge */}
-            <div className="hidden sm:inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/[0.07] px-3.5 py-1.5 backdrop-blur-md shadow-[0_0_16px_rgba(34,211,238,0.12)]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/[0.07] px-4 py-2 backdrop-blur-md shadow-[0_0_16px_rgba(34,211,238,0.12)]">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400"></span>
               </span>
               <Radio size={11} className="text-cyan-400" />
-              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-300">System Active</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-300">System Active · Edge Node 04</span>
             </div>
+
+            <div className="h-4 w-px bg-white/10" />
+
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">AI Highway Intelligence</span>
           </motion.div>
 
           {/* ── Main Headline ── */}
@@ -193,11 +179,10 @@ export default function HeroSentinel() {
               <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-500/10" />
               <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-500/20 border-dashed animate-spin-slow" style={{ animationDuration: '40s' }} />
               
-              {/* Center: Logo Mark instead of satellite */}
-              <div className="relative grid h-36 w-36 place-items-center rounded-full border border-cyan-400/20 bg-gradient-to-br from-cyan-400/5 to-transparent shadow-[0_0_50px_rgba(34,211,238,0.15)]">
-                <div className="absolute inset-0 rounded-full border border-cyan-300/15 animate-ping" style={{ animationDuration: '3s' }} />
-                <div className="grid h-24 w-24 place-items-center rounded-full border border-white/5 bg-slate-950/80 shadow-inner overflow-hidden">
-                  <img src={logo} alt="AeroMind" className="w-full h-full object-contain p-3 opacity-90" />
+              <div className="relative grid h-32 w-32 place-items-center rounded-full border border-cyan-400/30 bg-cyan-400/5 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
+                <div className="absolute inset-0 rounded-full border border-cyan-300/20 animate-ping" style={{ animationDuration: '3s' }} />
+                <div className="grid h-20 w-20 place-items-center rounded-full border border-emerald-400/40 bg-slate-950 shadow-inner">
+                  <Satellite className="animate-float text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]" size={32} />
                 </div>
               </div>
             </div>
