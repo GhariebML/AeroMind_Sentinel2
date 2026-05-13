@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { ExternalLink, Printer } from 'lucide-react';
 import { businessModel } from '../data/businessModel';
 import { coreMetrics, sentinelKpis } from '../data/sentinelMetrics';
@@ -64,10 +65,10 @@ export default function PitchDeckExport() {
   return (
     <main className="min-h-screen bg-slate-950 text-white print:bg-white print:text-slate-950">
       <div className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/90 px-6 py-4 backdrop-blur-xl print:hidden">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="mx-auto flex max-w-6xl items-center justify-between gap-3">
           <div className="flex items-center gap-5">
-            <div className="h-14 w-14 p-1.5 bg-white rounded-xl shadow-lg overflow-hidden">
-               <img src={logo} alt="Logo" className="w-full h-full object-contain scale-110" />
+            <div className="h-14 w-14 p-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg overflow-hidden">
+               <img src={logo} alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="font-mono text-xs uppercase tracking-[0.24em] text-cyan-200">Pitch Deck PDF Export</div>
@@ -78,7 +79,7 @@ export default function PitchDeckExport() {
             <button onClick={() => window.print()} className="btn-primary"><Printer size={16} /> Export PDF</button>
             <a href="/" className="btn-secondary"><ExternalLink size={16} /> Back to site</a>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 print:max-w-none print:px-0 print:py-0">
