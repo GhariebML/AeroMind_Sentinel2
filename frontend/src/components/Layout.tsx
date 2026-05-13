@@ -182,14 +182,14 @@ export default function Layout({ children }: { children: ReactNode }) {
                   <ExternalLink size={12} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
                 </a>
                 <a
-                  href="https://aero-mind-ai-autonomous-surveillanc.vercel.app/"
+                  href="https://mohamed-gharieb-portfolio.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 rounded-xl bg-cyan-500/[0.06] border border-cyan-500/[0.15] px-4 py-3 text-[13px] font-semibold text-cyan-400 hover:bg-cyan-500/[0.12] hover:border-cyan-500/30 hover:text-cyan-300 hover:-translate-y-0.5 transition-all duration-300 group"
                 >
-                  <ExternalLink size={16} className="text-cyan-500/70 group-hover:text-cyan-300 transition-colors" />
-                  <span className="flex-1">Live Prototype</span>
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <User size={16} className="text-cyan-500/70 group-hover:text-cyan-300 transition-colors" />
+                  <span className="flex-1">Personal Portfolio</span>
+                  <ExternalLink size={12} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
                 </a>
               </div>
 
