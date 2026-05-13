@@ -31,6 +31,7 @@ export default {
         roadFlow: { '0%': { transform: 'translateY(0)' }, '100%': { transform: 'translateY(46px)' } },
         float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } },
         drive: { '0%': { transform: 'translateY(140%)' }, '100%': { transform: 'translateY(-180%)' } },
+        shimmer: { '0%': { backgroundPosition: '-200% center' }, '100%': { backgroundPosition: '200% center' } },
       },
       animation: {
         scan: 'scan 3.8s linear infinite',
@@ -38,6 +39,7 @@ export default {
         roadFlow: 'roadFlow 1.3s linear infinite',
         float: 'float 6s ease-in-out infinite',
         drive: 'drive 5.5s linear infinite',
+        shimmer: 'shimmer 8s linear infinite',
       },
     },
   },

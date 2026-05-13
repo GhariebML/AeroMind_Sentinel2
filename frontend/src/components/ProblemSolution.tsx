@@ -1,37 +1,46 @@
 import { motion } from 'framer-motion';
 import { Activity, AlertCircle, AlertTriangle, CameraOff, Clock, Crosshair, ScanEye, ShieldAlert, TrendingUp, Zap } from 'lucide-react';
+import { Card } from './ui/Card';
+import { SectionHeader } from './ui/SectionHeader';
 
 const problems = [
-  ['Highway accidents', 'Fast-moving incidents can escalate into multi-vehicle emergencies before operators receive a reliable report.', AlertTriangle],
-  ['Delayed incident detection', 'Emergency teams often depend on phone calls or fixed cameras, creating minutes of avoidable delay.', Clock],
-  ['Sudden congestion', 'Blocked lanes and stopped vehicles create congestion waves that threaten drivers upstream.', Activity],
-  ['Limited camera coverage', 'Static cameras leave blind spots across long desert roads, ring roads, and temporary work zones.', CameraOff],
-  ['Slow emergency response', 'Without live overhead context, dispatchers lack exact lane, severity, and access corridor information.', AlertCircle],
-  ['Long road segments', 'Egypt’s expanding highway network needs mobile, scalable monitoring that moves toward risk.', TrendingUp],
+  ['Highway Accidents', 'Fast-moving incidents escalate into multi-vehicle emergencies rapidly.', AlertTriangle],
+  ['Delayed Detection', 'Reliance on calls and fixed cameras creates avoidable reporting delays.', Clock],
+  ['Sudden Congestion', 'Blocked lanes create dangerous congestion waves upstream.', Activity],
+  ['Limited Coverage', 'Static cameras leave blind spots across desert roads and work zones.', CameraOff],
+  ['Slow Response', 'Dispatchers lack exact lane, severity, and access corridor context.', AlertCircle],
+  ['Long Segments', 'Expanding networks need mobile, scalable monitoring toward risk.', TrendingUp],
 ] as const;
 
 const solutions = [
-  ['Autonomous drone monitoring', 'Drones patrol high-risk segments and dynamically reposition to incidents instead of watching one fixed point.', ScanEye],
-  ['Real-time AI detection', 'YOLOv8 + SAHI detects vehicles, pedestrians, stopped vehicles, hazards, and accident patterns from aerial video.', Crosshair],
-  ['Multi-object tracking', 'BoT-SORT + OSNet maintains persistent IDs to understand speed, stoppage, lane changes, and incident evolution.', Activity],
-  ['Highway risk scoring', 'The risk engine transforms events into explainable severity, recommended actions, and response priority.', ShieldAlert],
-  ['Emergency alerts', 'The dashboard surfaces critical events with confidence, lane, speed, and operational recommendations.', AlertTriangle],
-  ['Energy-aware navigation', 'PPO reinforcement learning moves toward high-risk zones while preserving battery and mission duration.', Zap],
+  ['Autonomous Drone Patrols', 'Drones patrol high-risk segments and dynamically reposition to incidents.', ScanEye],
+  ['Real-Time AI Vision', 'YOLOv8 + SAHI detects vehicles, pedestrians, and hazards from the air.', Crosshair],
+  ['Multi-Object Tracking', 'BoT-SORT + OSNet tracks speeds, stoppages, and incident evolution.', Activity],
+  ['Risk Scoring Engine', 'Transforms raw events into severity, action, and response priority.', ShieldAlert],
+  ['Emergency Dashboard', 'Surfaces critical alerts with confidence, lane, and speed metrics.', AlertTriangle],
+  ['Energy-Aware Navigation', 'PPO RL moves toward risk zones while preserving battery life.', Zap],
 ] as const;
-
-const cardVariants = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } };
 
 export function ProblemEgypt() {
   return (
-    <section id="problem" className="section-shell">
-      <Header eyebrow="Problem in Egypt" title="Highway safety needs faster eyes, better context, and mobile coverage." copy="AeroMind Sentinel focuses on a real public safety challenge: detecting dangerous highway events early enough to support faster emergency response." />
-      <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-120px' }} transition={{ staggerChildren: 0.08 }} className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+    <section id="problem" className="relative z-10 mx-auto w-full max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+      <SectionHeader 
+        eyebrow="The Problem" 
+        title="Highway safety needs faster eyes, better context, and mobile coverage." 
+        description="AeroMind Sentinel addresses a critical public safety challenge: detecting dangerous highway events early enough to support life-saving emergency response." 
+      />
+      
+      <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-50px' }} transition={{ staggerChildren: 0.08 }} className="mt-20 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {problems.map(([title, copy, Icon]) => (
-          <motion.article key={title} variants={cardVariants} className="glass-card group">
-            <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl border border-red-300/25 bg-red-400/10 text-red-300 transition group-hover:shadow-redGlow"><Icon /></div>
-            <h3 className="text-xl font-black text-white">{title}</h3>
-            <p className="mt-3 leading-7 text-slate-400">{copy}</p>
-          </motion.article>
+          <motion.div key={title} variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+            <Card hoverEffect className="h-full group bg-slate-900/40 border-white/5">
+              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10 text-red-400 transition-colors group-hover:bg-red-500/20 shadow-inner">
+                <Icon size={24} />
+              </div>
+              <h3 className="text-[17px] font-bold text-white mb-3 leading-snug">{title}</h3>
+              <p className="text-[14px] leading-[1.85] text-slate-400">{copy}</p>
+            </Card>
+          </motion.div>
         ))}
       </motion.div>
     </section>
@@ -40,27 +49,34 @@ export function ProblemEgypt() {
 
 export function SentinelSolution() {
   return (
-    <section id="solution" className="section-shell">
-      <Header eyebrow="Proposed Solution" title="Autonomous drone intelligence for highway command centers." copy="Sentinel converts aerial perception into emergency-ready decisions: detect, track, score, alert, and navigate toward risk while conserving battery." />
-      <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-120px' }} transition={{ staggerChildren: 0.08 }} className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {solutions.map(([title, copy, Icon]) => (
-          <motion.article key={title} variants={cardVariants} className="glass-card group">
-            <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl border border-cyan-300/25 bg-cyan-300/10 text-cyan-200 transition group-hover:shadow-glow"><Icon /></div>
-            <h3 className="text-xl font-black text-white">{title}</h3>
-            <p className="mt-3 leading-7 text-slate-400">{copy}</p>
-          </motion.article>
-        ))}
-      </motion.div>
-    </section>
-  );
-}
+    <section id="solution" className="relative z-10 mx-auto w-full max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+      <div className="rounded-[2.5rem] border border-cyan-500/10 bg-slate-900/40 p-10 md:p-16 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,rgba(34,211,238,0.05),transparent_50%)] pointer-events-none" />
+        
+        <div className="max-w-3xl mb-20 relative z-10">
+          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-400/8 px-4 py-2 font-mono text-[11px] font-black uppercase tracking-[0.22em] text-cyan-300">The Solution</span>
+          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-[1.1] mb-5">Autonomous drone intelligence for highway command centers.</h2>
+          <p className="text-[15px] leading-[1.85] text-slate-300">Sentinel converts aerial perception into emergency-ready decisions.</p>
+        </div>
 
-function Header({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
-  return (
-    <div className="mx-auto max-w-4xl text-center">
-      <span className="eyebrow">{eyebrow}</span>
-      <h2 className="section-title mx-auto">{title}</h2>
-      <p className="section-copy mx-auto">{copy}</p>
-    </div>
+        <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-50px' }} transition={{ staggerChildren: 0.08 }} className="grid gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-3 relative z-10">
+          {solutions.map(([title, copy, Icon]) => (
+            <motion.div key={title} variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }} className="flex flex-col gap-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.1)]">
+                <Icon size={24} />
+              </div>
+              <div>
+                <h3 className="text-[17px] font-bold text-white mb-3 leading-snug">{title}</h3>
+                <p className="text-[14px] leading-[1.85] text-slate-400">{copy}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <div className="mt-20 pt-10 border-t border-white/10 relative z-10 text-center">
+          <p className="text-lg md:text-xl font-bold text-cyan-50 leading-relaxed">Detect, track, score, alert, and navigate toward risk while conserving battery.</p>
+        </div>
+      </div>
+    </section>
   );
 }
