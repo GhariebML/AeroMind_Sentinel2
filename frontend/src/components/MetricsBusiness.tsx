@@ -19,7 +19,7 @@ export function SentinelMetrics() {
         <div>
           <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-cyan-400 mb-7 pl-3 border-l-2 border-cyan-400">Core AI Performance</h3>
           <div className="grid gap-5 sm:grid-cols-2">
-            {coreMetrics.map((metric, index) => (
+            {coreMetrics.map((metric: any, index: number) => (
               <MetricCard key={metric.label} metric={metric} index={index} />
             ))}
           </div>
@@ -28,7 +28,7 @@ export function SentinelMetrics() {
         <div>
           <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-400 mb-7 pl-3 border-l-2 border-emerald-400">Sentinel Operational KPIs</h3>
           <div className="grid gap-4">
-            {sentinelKpis.map((kpi, index) => (
+            {sentinelKpis.map((kpi: any, index: number) => (
               <motion.div key={kpi.label} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.1 }} viewport={{ once: true }}>
                 <Card className="p-6 bg-slate-900/60 border-white/5">
                   <div className="flex items-end justify-between mb-4">
@@ -76,7 +76,7 @@ export function BusinessModelCanvas() {
         transition={{ staggerChildren: 0.05 }} 
         className="mt-20 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
       >
-        {businessModel.map((block) => {
+        {businessModel.map((block: any) => {
           const Icon = BMC_ICONS[block.title] || Users;
           return (
             <motion.div key={block.title} variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }} className="h-full">
@@ -88,7 +88,7 @@ export function BusinessModelCanvas() {
                   <h3 className="text-[15px] font-black text-white tracking-tight leading-snug">{block.title}</h3>
                 </div>
                 <ul className="flex-grow space-y-3">
-                  {block.items.map((item) => (
+                  {block.items.map((item: any) => (
                     <li key={item} className="flex items-start gap-3 text-[13px] leading-[1.85] text-slate-300">
                       <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" /> 
                       {item}

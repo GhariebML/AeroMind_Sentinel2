@@ -25,7 +25,7 @@ export default function LiveHighwaySimulation() {
   const [judgeMode, setJudgeMode] = useState(false);
   const { events: pythonEvents } = usePythonInferenceEvents(pythonMode && running);
 
-  const scenario = scenarios.find((item) => item.id === scenarioId) ?? scenarios[0];
+  const scenario = scenarios.find((item: any) => item.id === scenarioId) ?? scenarios[0];
   const events = useMemo(
     () => scoreEvents(pythonMode && pythonEvents?.length ? pythonEvents : scenario.events),
     [pythonMode, pythonEvents, scenario.events],
@@ -51,7 +51,7 @@ export default function LiveHighwaySimulation() {
     if (!judgeMode || !running) return undefined;
     const id = window.setInterval(() => {
       setScenarioId((current) => {
-        const index = scenarios.findIndex((item) => item.id === current);
+        const index = scenarios.findIndex((item: any) => item.id === current);
         return scenarios[(index + 1) % scenarios.length].id;
       });
       setTick(0);
@@ -106,7 +106,7 @@ export default function LiveHighwaySimulation() {
           <div className="mb-4 flex flex-wrap gap-2 items-center justify-between">
             <div className="flex flex-wrap gap-2">
               <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500 self-center mr-2">Scenarios</span>
-              {scenarios.map((item) => (
+              {scenarios.map((item: any) => (
                 <button key={item.id} onClick={() => { setScenarioId(item.id); setTick(0); }} className={`rounded-lg border px-3 py-1.5 text-[11px] font-black uppercase tracking-wider transition-all ${scenarioId === item.id ? 'border-cyan-400 bg-cyan-400 text-slate-950 shadow-[0_0_15px_rgba(34,211,238,0.4)]' : 'border-white/10 bg-white/5 text-slate-300 hover:border-cyan-400/50 hover:bg-cyan-400/10'}`}>
                   {item.label}
                 </button>
