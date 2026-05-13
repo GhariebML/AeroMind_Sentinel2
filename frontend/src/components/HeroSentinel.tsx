@@ -41,56 +41,129 @@ export default function HeroSentinel() {
     <section ref={containerRef} id="hero" className="relative min-h-[100dvh] overflow-hidden flex flex-col bg-[#020617]">
       {/* Dynamic Immersive Background */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.08),transparent_70%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(16,185,129,0.05),transparent_40rem)]" />
-        <div className="perspective-road pointer-events-none absolute inset-x-0 bottom-0 h-[60vh] opacity-60">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(34,211,238,0.07),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(16,185,129,0.06),transparent_40rem)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(99,102,241,0.04),transparent_30rem)]" />
+        <div className="perspective-road pointer-events-none absolute inset-x-0 bottom-0 h-[55vh] opacity-50">
           <div className="road-plane absolute inset-x-[-20%] bottom-[-50%] h-[150%] animate-roadFlow" />
         </div>
+        {/* Subtle grid overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:80px_80px]" />
       </div>
 
-      <div className="section-shell relative z-10 grid lg:grid-cols-[1.1fr_.9fr] items-center flex-grow w-full pt-32 pb-24 md:pt-40 md:pb-32 gap-12 lg:gap-8">
+      <div className="section-shell relative z-10 grid lg:grid-cols-[1.1fr_.9fr] items-center flex-grow w-full pt-28 pb-24 md:pt-36 md:pb-32 gap-16 lg:gap-12">
         
-        {/* LEFT COLUMN: Cinematic Typography */}
+        {/* LEFT COLUMN: Premium Brand Block */}
         <motion.div style={{ y: y2, opacity }} className="flex flex-col relative z-20">
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="mb-8 flex items-center gap-6">
-            <div className="h-20 w-20 p-3 bg-white/5 backdrop-blur-xl rounded-2xl shadow-[0_0_30px_rgba(255,255,255,0.05)] border border-white/10 overflow-hidden">
-               <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+
+          {/* ── Brand Lockup: Logo + Name ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="flex items-center gap-5 mb-10"
+          >
+            {/* Logo mark — premium glass container */}
+            <div className="relative flex-shrink-0">
+              <div className="absolute inset-0 rounded-2xl bg-cyan-400/10 blur-xl scale-110" />
+              <div className="relative h-[72px] w-[72px] rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] overflow-hidden">
+                <img src={logo} alt="AeroMind Sentinel" className="w-full h-full object-contain p-2" />
+              </div>
             </div>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-2 shadow-[0_0_20px_rgba(34,211,238,0.2)] backdrop-blur-md">
-              <Radio size={14} className="text-cyan-400 animate-pulse" />
-              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-cyan-300">System Active · Edge Node 04</span>
+
+            {/* Brand name lockup */}
+            <div className="flex flex-col">
+              <span className="block text-[10px] font-black uppercase tracking-[0.32em] text-cyan-400/80 leading-none mb-1.5">AeroMind</span>
+              <span className="block text-[28px] font-black tracking-tight text-white leading-none">Sentinel</span>
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 leading-none mt-1.5">AI Highway Intelligence</span>
+            </div>
+
+            {/* Divider */}
+            <div className="hidden sm:block h-12 w-px bg-white/10 mx-2" />
+
+            {/* Live status badge */}
+            <div className="hidden sm:inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/[0.07] px-3.5 py-1.5 backdrop-blur-md shadow-[0_0_16px_rgba(34,211,238,0.12)]">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400"></span>
+              </span>
+              <Radio size={11} className="text-cyan-400" />
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-300">System Active</span>
             </div>
           </motion.div>
-          
-          <h1 className="text-5xl md:text-6xl lg:text-[5rem] xl:text-[5.5rem] font-black leading-[1.05] tracking-tight text-white mb-6">
-            <motion.span initial={{ opacity: 0, filter: "blur(10px)", y: 20 }} animate={{ opacity: 1, filter: "blur(0px)", y: 0 }} transition={{ duration: 0.8, delay: 0.1 }} className="block">AeroMind</motion.span>
-            <motion.span initial={{ opacity: 0, filter: "blur(10px)", y: 20 }} animate={{ opacity: 1, filter: "blur(0px)", y: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="block bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(52,211,153,0.3)] bg-[length:200%_auto] animate-shimmer">
-              Sentinel
+
+          {/* ── Main Headline ── */}
+          <h1 className="text-5xl md:text-6xl lg:text-[5rem] xl:text-[5.5rem] font-black leading-[1.04] tracking-tight text-white mb-6">
+            <motion.span
+              initial={{ opacity: 0, filter: "blur(12px)", y: 24 }}
+              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+              transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="block"
+            >
+              Autonomous
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, filter: "blur(12px)", y: 24 }}
+              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+              transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="block bg-gradient-to-r from-cyan-400 via-emerald-300 to-cyan-300 bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer"
+            >
+              Drone AI
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, filter: "blur(12px)", y: 24 }}
+              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+              transition={{ duration: 0.9, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="block text-slate-300"
+            >
+              for Highways
             </motion.span>
           </h1>
-          
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="text-lg md:text-xl lg:text-2xl font-medium text-cyan-50 mb-6 max-w-2xl leading-relaxed">
-            Autonomous drone intelligence for highway incident detection and emergency risk scoring.
+
+          {/* ── Sub-headline ── */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.55 }}
+            className="text-[15px] md:text-base leading-[1.85] text-slate-400 max-w-lg mb-10"
+          >
+            Real-time highway incident detection, risk scoring, and emergency response routing — powered by autonomous aerial surveillance and edge AI.
           </motion.p>
-          
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="text-[15px] md:text-base leading-relaxed text-slate-400 max-w-xl mb-12">
-            Transforms raw aerial feeds into actionable operational decisions, enabling faster emergency response for critical infrastructure.
-          </motion.p>
-          
-          {/* CTAs */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.7 }} className="flex flex-col sm:flex-row items-start sm:items-center gap-5 relative z-30">
+
+          {/* ── CTAs ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.65 }}
+            className="flex flex-col sm:flex-row items-start sm:items-center gap-4 relative z-30"
+          >
             <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-500 group-hover:duration-200"></div>
-              <Button variant="primary" size="lg" onClick={() => scrollTo('#simulation')} className="relative w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black">
-                <Play size={18} fill="currentColor" className="mr-2" /> Watch Live Demo
+              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-500" />
+              <Button variant="primary" size="lg" onClick={() => scrollTo('#simulation')} className="relative w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black shadow-[0_0_20px_rgba(34,211,238,0.3)]">
+                <Play size={17} fill="currentColor" className="mr-2" /> Watch Live Demo
               </Button>
             </div>
             <Button variant="outline" size="lg" onClick={() => scrollTo('#business')} className="w-full sm:w-auto border-white/10 hover:bg-white/5 bg-slate-950/50 backdrop-blur-md">
-              <Activity size={18} className="mr-2" /> Business Model
+              <Activity size={17} className="mr-2" /> Business Model
             </Button>
-            <a href="/pitch" target="_blank" className="text-sm font-bold uppercase tracking-widest text-slate-400 hover:text-cyan-400 flex items-center gap-2 mt-4 sm:mt-0 sm:ml-4 transition-colors">
-              <FileText size={16} /> Pitch Deck
+            <a href="/pitch" target="_blank" className="text-[12px] font-bold uppercase tracking-[0.15em] text-slate-500 hover:text-cyan-400 flex items-center gap-2 transition-colors">
+              <FileText size={14} /> Pitch PDF
             </a>
+          </motion.div>
+
+          {/* ── Proof Stats Row ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="mt-12 flex items-center gap-6 flex-wrap"
+          >
+            {proofMetrics.map((m) => (
+              <div key={m.label} className="flex flex-col">
+                <span className="font-mono text-lg font-black text-white leading-none">{m.value}</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 mt-0.5">{m.label}</span>
+              </div>
+            ))}
           </motion.div>
         </motion.div>
 
@@ -102,7 +175,7 @@ export default function HeroSentinel() {
             initial={{ opacity: 0, rotateX: 10, rotateY: -10, z: -100 }} 
             animate={{ opacity: 1, rotateX: 0, rotateY: 0, z: 0 }} 
             transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-            className="absolute inset-0 rounded-[2rem] border border-cyan-500/20 bg-slate-900/40 p-6 backdrop-blur-xl shadow-[0_0_50px_rgba(2,6,23,0.8)] overflow-hidden"
+            className="absolute inset-0 rounded-[2rem] border border-cyan-500/20 bg-slate-900/40 p-6 backdrop-blur-xl shadow-[0_0_60px_rgba(2,6,23,0.9),inset_0_1px_0_rgba(255,255,255,0.05)] overflow-hidden"
           >
             {/* Grid & Scanning effect */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20" />
@@ -120,10 +193,11 @@ export default function HeroSentinel() {
               <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-500/10" />
               <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-500/20 border-dashed animate-spin-slow" style={{ animationDuration: '40s' }} />
               
-              <div className="relative grid h-32 w-32 place-items-center rounded-full border border-cyan-400/30 bg-cyan-400/5 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
-                <div className="absolute inset-0 rounded-full border border-cyan-300/20 animate-ping" style={{ animationDuration: '3s' }} />
-                <div className="grid h-20 w-20 place-items-center rounded-full border border-emerald-400/40 bg-slate-950 shadow-inner">
-                  <Satellite className="animate-float text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]" size={32} />
+              {/* Center: Logo Mark instead of satellite */}
+              <div className="relative grid h-36 w-36 place-items-center rounded-full border border-cyan-400/20 bg-gradient-to-br from-cyan-400/5 to-transparent shadow-[0_0_50px_rgba(34,211,238,0.15)]">
+                <div className="absolute inset-0 rounded-full border border-cyan-300/15 animate-ping" style={{ animationDuration: '3s' }} />
+                <div className="grid h-24 w-24 place-items-center rounded-full border border-white/5 bg-slate-950/80 shadow-inner overflow-hidden">
+                  <img src={logo} alt="AeroMind" className="w-full h-full object-contain p-3 opacity-90" />
                 </div>
               </div>
             </div>
@@ -134,7 +208,7 @@ export default function HeroSentinel() {
             initial={{ opacity: 0, x: 50, y: 20 }} 
             animate={{ opacity: 1, x: 0, y: [0, -8, 0] }} 
             transition={{ duration: 1, delay: 0.8, y: { duration: 4, repeat: Infinity, ease: "easeInOut" } }}
-            className="absolute -right-8 top-16 rounded-xl border border-white/10 bg-slate-950/80 p-4 backdrop-blur-2xl shadow-2xl w-48"
+            className="absolute -right-8 top-16 rounded-xl border border-white/10 bg-slate-950/90 p-4 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] w-48"
           >
             <div className="flex items-center gap-2 text-emerald-400 mb-1">
               <Battery size={14} />
@@ -142,7 +216,7 @@ export default function HeroSentinel() {
             </div>
             <div className="text-2xl font-black text-white">92%</div>
             <div className="mt-2 h-1 w-full bg-slate-800 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-400 w-[92%]" />
+              <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 w-[92%]" />
             </div>
           </motion.div>
 
@@ -151,11 +225,11 @@ export default function HeroSentinel() {
             initial={{ opacity: 0, x: -50, y: 20 }} 
             animate={{ opacity: 1, x: 0, y: [0, -10, 0] }} 
             transition={{ duration: 1, delay: 1, y: { duration: 5, repeat: Infinity, ease: "easeInOut" } }}
-            className="absolute -left-12 bottom-24 rounded-xl border border-red-500/20 bg-slate-950/80 p-4 backdrop-blur-2xl shadow-[0_0_30px_rgba(239,68,68,0.15)] w-56"
+            className="absolute -left-12 bottom-24 rounded-xl border border-red-500/20 bg-slate-950/90 p-4 backdrop-blur-2xl shadow-[0_0_30px_rgba(239,68,68,0.1)] w-56"
           >
             <div className="flex items-start gap-3">
-              <div className="rounded bg-red-500/10 p-1.5 border border-red-500/20">
-                <ShieldAlert size={16} className="text-red-400" />
+              <div className="rounded bg-red-500/10 p-1.5 border border-red-500/20 mt-0.5 flex-shrink-0">
+                <ShieldAlert size={14} className="text-red-400" />
               </div>
               <div>
                 <div className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-0.5">Critical Alert</div>
@@ -170,9 +244,9 @@ export default function HeroSentinel() {
             initial={{ opacity: 0, y: 50 }} 
             animate={{ opacity: 1, y: [0, -6, 0] }} 
             transition={{ duration: 1, delay: 1.2, y: { duration: 3, repeat: Infinity, ease: "easeInOut" } }}
-            className="absolute -right-4 bottom-8 rounded-xl border border-cyan-500/20 bg-slate-950/80 p-3 backdrop-blur-2xl shadow-xl flex items-center gap-3"
+            className="absolute -right-4 bottom-8 rounded-xl border border-cyan-500/20 bg-slate-950/90 p-3 backdrop-blur-2xl shadow-xl flex items-center gap-3"
           >
-            <Radio size={16} className="text-cyan-400" />
+            <Satellite size={16} className="text-cyan-400" />
             <div>
               <div className="text-[9px] font-black uppercase tracking-widest text-slate-400">Stream Latency</div>
               <div className="text-base font-black text-white">45<span className="text-xs text-cyan-400 ml-0.5">ms</span></div>
@@ -183,7 +257,7 @@ export default function HeroSentinel() {
       </div>
 
       {/* BOTTOM TICKER TAPE */}
-      <div className="absolute bottom-0 left-0 right-0 h-14 border-t border-white/5 bg-slate-950/50 backdrop-blur-md overflow-hidden flex items-center z-30">
+      <div className="absolute bottom-0 left-0 right-0 h-14 border-t border-white/5 bg-slate-950/60 backdrop-blur-md overflow-hidden flex items-center z-30">
         <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#020617] to-transparent z-10" />
         <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#020617] to-transparent z-10" />
         
