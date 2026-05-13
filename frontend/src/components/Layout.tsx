@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, ShieldAlert, X, Code, User, ExternalLink } from 'lucide-react';
+import { Menu, X, Code, User, ExternalLink } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
+import logo from '../assets/logo.png';
 
 const NAV_LINKS = [
   { name: 'Problem', href: '#problem' },
@@ -34,13 +35,13 @@ export default function Layout({ children }: { children: ReactNode }) {
       <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'border-b border-white/10 bg-slate-950/80 shadow-2xl shadow-black/40 backdrop-blur-xl py-2' : 'bg-transparent py-4'}`}>
         <div className="mx-auto flex h-16 max-w-[90rem] items-center justify-between px-4 sm:px-6 lg:px-8">
           <button onClick={() => goTo('#hero')} className="flex items-center gap-3 text-left group shrink-0">
-            <span className="grid h-10 w-10 place-items-center rounded-xl border border-cyan-400/30 bg-cyan-400/10 shadow-[0_0_15px_rgba(34,211,238,0.2)] group-hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-all">
-              <ShieldAlert className="text-cyan-300" size={20} />
-            </span>
-            <span>
-              <span className="block text-[10px] font-black uppercase tracking-[0.25em] text-cyan-300">AeroMind</span>
-              <span className="block text-base font-black tracking-tight text-white group-hover:text-cyan-50 transition-colors">Sentinel</span>
-            </span>
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_25px_rgba(34,211,238,0.2)] overflow-hidden">
+              <img src={logo} alt="AeroMind Sentinel" className="h-full w-full object-cover scale-110" />
+            </div>
+            <div className="hidden sm:block">
+              <span className="block text-[11px] font-black uppercase tracking-[0.25em] text-cyan-300 leading-none mb-1">AeroMind</span>
+              <span className="block text-lg font-black tracking-tighter text-white group-hover:text-cyan-50 transition-colors leading-none">Sentinel</span>
+            </div>
           </button>
 
           <nav className="hidden items-center gap-5 xl:flex">
@@ -98,13 +99,13 @@ export default function Layout({ children }: { children: ReactNode }) {
 
             {/* Column 1 — Brand & Navigation */}
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="flex flex-col gap-7">
-              <div className="flex items-center gap-3.5 group">
-                <div className="grid h-11 w-11 place-items-center rounded-xl bg-cyan-400/10 border border-cyan-400/20 shadow-[0_0_18px_rgba(34,211,238,0.15)] group-hover:shadow-[0_0_28px_rgba(34,211,238,0.3)] transition-shadow duration-500">
-                  <ShieldAlert className="text-cyan-400" size={20} />
+              <div className="flex items-center gap-3.5 group cursor-pointer" onClick={() => goTo('#hero')}>
+                <div className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white shadow-[0_0_18px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_28px_rgba(34,211,238,0.2)] transition-all overflow-hidden">
+                  <img src={logo} alt="Logo" className="h-full w-full object-cover scale-110" />
                 </div>
                 <div>
-                  <span className="block text-[10px] font-black uppercase tracking-[0.25em] text-cyan-400">AeroMind</span>
-                  <span className="block text-lg font-black tracking-tight text-white">Sentinel</span>
+                  <span className="block text-[11px] font-black uppercase tracking-[0.25em] text-cyan-400 leading-none mb-1">AeroMind</span>
+                  <span className="block text-lg font-black tracking-tight text-white leading-none">Sentinel</span>
                 </div>
               </div>
 

@@ -1,6 +1,7 @@
 import { ExternalLink, Printer } from 'lucide-react';
 import { businessModel } from '../data/businessModel';
 import { coreMetrics, sentinelKpis } from '../data/sentinelMetrics';
+import logo from '../assets/logo.png';
 
 const slides = [
   {
@@ -63,10 +64,15 @@ export default function PitchDeckExport() {
   return (
     <main className="min-h-screen bg-slate-950 text-white print:bg-white print:text-slate-950">
       <div className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/90 px-6 py-4 backdrop-blur-xl print:hidden">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="font-mono text-xs uppercase tracking-[0.24em] text-cyan-200">Pitch Deck PDF Export</div>
-            <h1 className="text-2xl font-black">AeroMind Sentinel</h1>
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
+          <div className="flex items-center gap-5">
+            <div className="h-14 w-14 p-1.5 bg-white rounded-xl shadow-lg overflow-hidden">
+               <img src={logo} alt="Logo" className="w-full h-full object-contain scale-110" />
+            </div>
+            <div>
+              <div className="font-mono text-xs uppercase tracking-[0.24em] text-cyan-200">Pitch Deck PDF Export</div>
+              <h1 className="text-2xl font-black">AeroMind Sentinel</h1>
+            </div>
           </div>
           <div className="flex gap-3">
             <button onClick={() => window.print()} className="btn-primary"><Printer size={16} /> Export PDF</button>
