@@ -31,19 +31,19 @@ const slides = [
     title: 'Technical Proof',
     eyebrow: 'AeroMind AI core metrics',
     copy: 'The product is built on an existing autonomous aerial surveillance stack.',
-    bullets: coreMetrics.map((metric) => `${metric.label}: ${metric.prefix ?? ''}${metric.value}${metric.suffix}`),
+    bullets: coreMetrics.map((metric: any) => `${metric.label}: ${metric.prefix ?? ''}${metric.value}${metric.suffix}`),
   },
   {
     title: 'Sentinel KPIs',
     eyebrow: 'Highway product indicators',
     copy: 'A judge/investor-friendly view of operational value.',
-    bullets: sentinelKpis.map((kpi) => `${kpi.label}: ${kpi.value}`),
+    bullets: sentinelKpis.map((kpi: any) => `${kpi.label}: ${kpi.value}`),
   },
   {
     title: 'Business Model',
     eyebrow: 'B2G + B2B deployment',
     copy: 'A scalable model for traffic authorities, smart cities, road operators, logistics fleets, insurance, and security providers.',
-    bullets: businessModel.slice(0, 5).map((block) => `${block.title}: ${block.items[0]}`),
+    bullets: businessModel.slice(0, 5).map((block: any) => `${block.title}: ${block.items[0]}`),
   },
   {
     title: 'Egypt Impact',
@@ -90,7 +90,7 @@ export default function PitchDeckExport() {
               <div className="rounded-[2rem] border border-cyan-300/20 bg-cyan-300/10 p-6 print:border-slate-200 print:bg-slate-50">
                 <div className="mb-5 text-sm font-black uppercase tracking-[0.18em] text-emerald-300 print:text-slate-500">Key points</div>
                 <ul className="space-y-4">
-                  {slide.bullets.map((bullet) => <li key={bullet} className="flex gap-3 text-lg leading-8 text-slate-100 print:text-slate-800"><span className="mt-3 h-2 w-2 shrink-0 rounded-full bg-emerald-300 print:bg-slate-700" />{bullet}</li>)}
+                  {slide.bullets.map((bullet: string) => <li key={bullet} className="flex gap-3 text-lg leading-8 text-slate-100 print:text-slate-800"><span className="mt-3 h-2 w-2 shrink-0 rounded-full bg-emerald-300 print:bg-slate-700" />{bullet}</li>)}
                 </ul>
               </div>
             </div>
