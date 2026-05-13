@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Battery, Pause, Play, Radar, RefreshCw, Satellite, ShieldAlert, Siren, Zap, Info, Activity } from 'lucide-react';
+import { Battery, Pause, Play, Radar, RefreshCw, Satellite, Siren, Zap, Info, Activity } from 'lucide-react';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { usePythonInferenceEvents } from '../hooks/usePythonInferenceEvents';
 import { scenarios } from '../data/highwayEvents';
@@ -23,7 +23,7 @@ export default function LiveHighwaySimulation() {
   const [videoMode, setVideoMode] = useState(false);
   const [pythonMode, setPythonMode] = useState(false);
   const [judgeMode, setJudgeMode] = useState(false);
-  const { events: pythonEvents, source: inferenceSource, connected } = usePythonInferenceEvents(pythonMode && running);
+  const { events: pythonEvents } = usePythonInferenceEvents(pythonMode && running);
 
   const scenario = scenarios.find((item) => item.id === scenarioId) ?? scenarios[0];
   const events = useMemo(
