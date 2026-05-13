@@ -3,6 +3,7 @@ airsim_src/
 build/
 dist/
 data/
+!frontend/src/data/
 experiments/results/
 checkpoints/
 models/
