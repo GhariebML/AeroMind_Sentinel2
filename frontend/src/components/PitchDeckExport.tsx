@@ -67,7 +67,7 @@ export default function PitchDeckExport() {
       <div className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/90 px-6 py-4 backdrop-blur-xl print:hidden">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="mx-auto flex max-w-6xl items-center justify-between gap-3">
           <div className="flex items-center gap-5">
-            <div className="h-14 w-14 p-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg overflow-hidden">
+            <div className="h-16 w-16 p-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg overflow-hidden">
                <img src={logo} alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div>

@@ -61,13 +61,13 @@ export default function HeroSentinel() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-5 mb-10"
+            className="flex items-center gap-6 mb-12"
           >
             {/* Logo mark — premium glass container */}
             <div className="relative flex-shrink-0">
-              <div className="absolute inset-0 rounded-2xl bg-cyan-400/10 blur-xl scale-110" />
-              <div className="relative h-[72px] w-[72px] rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] overflow-hidden">
-                <img src={logo} alt="AeroMind Sentinel" className="w-full h-full object-contain p-2" />
+              <div className="absolute inset-0 rounded-2xl bg-cyan-400/10 blur-2xl scale-110" />
+              <div className="relative h-20 w-20 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] overflow-hidden">
+                <img src={logo} alt="AeroMind Sentinel" className="w-full h-full object-contain p-1.5" />
               </div>
             </div>
 

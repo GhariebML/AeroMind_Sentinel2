@@ -34,9 +34,9 @@ export default function Layout({ children }: { children: ReactNode }) {
     <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500/30">
       <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'border-b border-white/10 bg-slate-950/80 shadow-2xl shadow-black/40 backdrop-blur-xl py-2' : 'bg-transparent py-4'}`}>
         <div className="mx-auto flex h-16 max-w-[90rem] items-center justify-between px-4 sm:px-6 lg:px-8">
-          <button onClick={() => goTo('#hero')} className="flex items-center gap-3 text-left group shrink-0">
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_25px_rgba(34,211,238,0.2)] overflow-hidden">
-              <img src={logo} alt="AeroMind Sentinel" className="h-full w-full object-contain p-1.5" />
+          <button onClick={() => goTo('#hero')} className="flex items-center gap-4 text-left group shrink-0">
+            <div className="relative flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all group-hover:scale-105 group-hover:shadow-[0_0_25px_rgba(34,211,238,0.2)] overflow-hidden">
+              <img src={logo} alt="AeroMind Sentinel" className="h-full w-full object-contain p-1" />
             </div>
             <div className="hidden sm:block">
               <span className="block text-[11px] font-black uppercase tracking-[0.25em] text-cyan-300 leading-none mb-1">AeroMind</span>
@@ -99,8 +99,8 @@ export default function Layout({ children }: { children: ReactNode }) {
 
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="flex flex-col gap-7">
               <div className="flex items-center gap-3.5 group cursor-pointer" onClick={() => goTo('#hero')}>
-                <div className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_0_18px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_28px_rgba(34,211,238,0.2)] transition-all overflow-hidden">
-                  <img src={logo} alt="Logo" className="h-full w-full object-contain p-1.5" />
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_0_18px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_28px_rgba(34,211,238,0.2)] transition-all overflow-hidden">
+                  <img src={logo} alt="Logo" className="h-full w-full object-contain p-1" />
                 </div>
                 <div>
                   <span className="block text-[11px] font-black uppercase tracking-[0.25em] text-cyan-400 leading-none mb-1">AeroMind</span>
