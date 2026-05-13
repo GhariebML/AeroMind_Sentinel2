@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Activity, Battery, Play, Radio, Satellite, ShieldAlert, Crosshair, AlertTriangle, Zap, FileText } from 'lucide-react';
 import { useRef } from 'react';
 import { Button } from './ui/Button';
+import logo from '../assets/logo.png';
 
 type MetricItem = { label: string; value: string; icon?: undefined };
 type CapItem = { label: string; icon: React.ReactNode; value?: undefined };
@@ -51,7 +52,10 @@ export default function HeroSentinel() {
         
         {/* LEFT COLUMN: Cinematic Typography */}
         <motion.div style={{ y: y2, opacity }} className="flex flex-col relative z-20">
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="mb-8">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="mb-8 flex items-center gap-6">
+            <div className="h-20 w-20 p-2 bg-white rounded-2xl shadow-[0_0_30px_rgba(255,255,255,0.15)] overflow-hidden">
+               <img src={logo} alt="Logo" className="w-full h-full object-contain scale-110" />
+            </div>
             <div className="inline-flex items-center gap-2.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-2 shadow-[0_0_20px_rgba(34,211,238,0.2)] backdrop-blur-md">
               <Radio size={14} className="text-cyan-400 animate-pulse" />
               <span className="text-[11px] font-black uppercase tracking-[0.2em] text-cyan-300">System Active · Edge Node 04</span>
