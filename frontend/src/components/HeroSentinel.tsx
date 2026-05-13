@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Activity, Battery, Play, Radio, Satellite, ShieldAlert, Crosshair, AlertTriangle, Zap, FileText } from 'lucide-react';
 import { useRef } from 'react';
 import { Button } from './ui/Button';
-import logo from '../assets/logo.png';
+import Hero3DMotionGraphic from './Hero3DMotionGraphic';
 
 type MetricItem = { label: string; value: string; icon?: undefined };
 type CapItem = { label: string; icon: React.ReactNode; value?: undefined };
@@ -161,30 +161,22 @@ export default function HeroSentinel() {
             initial={{ opacity: 0, rotateX: 10, rotateY: -10, z: -100 }} 
             animate={{ opacity: 1, rotateX: 0, rotateY: 0, z: 0 }} 
             transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-            className="absolute inset-0 rounded-[2rem] border border-cyan-500/20 bg-slate-900/40 p-6 backdrop-blur-xl shadow-[0_0_60px_rgba(2,6,23,0.9),inset_0_1px_0_rgba(255,255,255,0.05)] overflow-hidden"
+            className="absolute inset-0 rounded-[2rem] border border-cyan-500/20 bg-slate-900/40 p-6 backdrop-blur-xl shadow-[0_0_60px_rgba(2,6,23,0.9),inset_0_1px_0_rgba(255,255,255,0.05)] overflow-hidden flex flex-col justify-between"
           >
             {/* Grid & Scanning effect */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20" />
             <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-cyan-500/10 to-transparent animate-scan" />
             
-            <div className="relative z-10 flex items-center justify-between pb-4 border-b border-white/10">
-              <div className="inline-flex items-center gap-1.5 rounded bg-emerald-500/10 px-2 py-1 border border-emerald-500/20">
+            <div className="relative z-10 flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
+              <div className="inline-flex items-center gap-1.5 rounded bg-emerald-500/10 px-2.5 py-1 border border-emerald-500/20">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> 
-                <span className="font-mono text-[9px] font-black tracking-widest text-emerald-400 uppercase">Live Feed</span>
+                <span className="font-mono text-[9px] font-black tracking-widest text-emerald-400 uppercase">Live Aerial Stream</span>
               </div>
-              <div className="font-mono text-[9px] font-black tracking-widest text-cyan-500/50">ALT: 120M | SPD: 24M/S</div>
+              <div className="font-mono text-[9px] font-black tracking-widest text-cyan-400/80 bg-cyan-500/5 px-2.5 py-1 rounded border border-cyan-500/10">TELEMETRY: OPTIMAL</div>
             </div>
 
-            <div className="relative h-full flex items-center justify-center">
-              <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-500/10" />
-              <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-500/20 border-dashed animate-spin-slow" style={{ animationDuration: '40s' }} />
-              
-              <div className="relative grid h-32 w-32 place-items-center rounded-full border border-cyan-400/30 bg-cyan-400/5 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
-                <div className="absolute inset-0 rounded-full border border-cyan-300/20 animate-ping" style={{ animationDuration: '3s' }} />
-                <div className="grid h-20 w-20 place-items-center rounded-full border border-emerald-400/40 bg-slate-950 shadow-inner">
-                  <Satellite className="animate-float text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]" size={32} />
-                </div>
-              </div>
+            <div className="relative flex-1 w-full flex items-center justify-center my-auto overflow-hidden rounded-2xl z-10">
+              <Hero3DMotionGraphic />
             </div>
           </motion.div>
 
